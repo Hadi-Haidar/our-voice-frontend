@@ -1,12 +1,6 @@
 import { LazyMotion, domAnimation, m, useInView } from "framer-motion";
 import { useRef } from "react";
-
-const stats = [
-  { label: "Reported Issues", value: 120 },
-  { label: "Community Votes", value: 540 },
-  { label: "Active Citizens", value: 320 },
-  { label: "Resolved Problems", value: 28 },
-];
+import { useStats } from "../../hooks/useStats";
 
 function CountUp({ value }) {
   const ref = useRef(null);
@@ -21,6 +15,13 @@ function CountUp({ value }) {
 }
 
 export default function StatsSection() {
+  const { stats, loading } = useStats();
+
+
+  if (loading) return null; // no layout shift
+console.log("StatsSection:", { stats, loading });
+
+
   return (
     <LazyMotion features={domAnimation}>
       <section className="rounded-3xl border border-gray-200 bg-gray-50 p-8 sm:p-12">
@@ -42,4 +43,5 @@ export default function StatsSection() {
       </section>
     </LazyMotion>
   );
+  
 }
