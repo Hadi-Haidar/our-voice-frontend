@@ -1,1 +1,52 @@
 @import "tailwindcss";
+
+
+/* Default Light Theme */
+:root {
+    --bg-main: #ffffff;
+    --text-main: #111827;
+    --border-main: #e5e7eb;
+    --nav-bg: rgba(255, 255, 255, 0.95);
+    color-scheme: light;
+}
+
+/* Dark Theme Overrides */
+.dark {
+    --bg-main: #030712;
+    --text-main: #f9fafb;
+    --border-main: #1f2937;
+    --nav-bg: rgba(17, 24, 39, 0.95);
+    color-scheme: dark;
+}
+
+@layer base {
+
+    html,
+    body {
+        background-color: var(--bg-main) !important;
+        color: var(--text-main) !important;
+    }
+
+    body {
+        transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        min-height: 100vh;
+    }
+
+    /* Force borders to respond to the variable */
+    * {
+        border-color: var(--border-main);
+    }
+}
+
+/* 
+  Ensuring Tailwind's dark: variant works. 
+  By default, Tailwind v4 detects dark mode via media query.
+  To force it to look at the .dark class, we use this:
+*/
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Glassmorphism utility that adapts */
+.glass-nav {
+    background-color: var(--nav-bg);
+    backdrop-filter: blur(8px);
+}
