@@ -3,6 +3,7 @@ import { NavLink, Link } from "react-router-dom";
 import { useLanguage } from "../hooks/useLanguage";
 import { useTheme } from "../contexts/ThemeContext";
 import LanguageSwitcher from "./LanguageSwitcher";
+import logo from "../assets/logo.webp";
 import {
     Cross1Icon,
     HamburgerMenuIcon,
@@ -216,7 +217,7 @@ export default function Sidebar({ isOpen, onClose, expanded, onExpandedChange })
                         className="flex items-center gap-2 font-bold text-lg text-gray-900 dark:text-white"
                     >
                         <img
-                            src="/src/assets/logo.webp"
+                            src={logo}
                             alt="Our Voice Lebanon logo"
                             className="h-8 w-auto object-contain"
                         />

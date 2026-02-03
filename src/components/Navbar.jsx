@@ -42,14 +42,14 @@ export default function Navbar({ onMenuClick }) {
               <HamburgerMenuIcon className="h-5 w-5" />
             </button>
 
-            {/* Logo - Hidden on mobile, visible on sm and up */}
-            <NavLink to="/" className="hidden sm:flex items-center gap-2 font-bold text-gray-900 dark:text-white">
+            {/* Logo - Visible on all screens, text hidden on mobile */}
+            <NavLink to="/" className="flex items-center gap-2 font-bold text-gray-900 dark:text-white">
               <img
                 src={logo}
                 alt="Our Voice Lebanon logo"
                 className="h-10 w-auto object-contain"
               />
-              <span>{t("nav.ourVoice")}</span>
+              <span className="hidden sm:inline">{t("nav.ourVoice")}</span>
             </NavLink>
           </div>
 
