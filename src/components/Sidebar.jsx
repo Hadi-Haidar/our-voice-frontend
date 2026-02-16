@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { useLanguage } from "../hooks/useLanguage";
 import { useTheme } from "../contexts/ThemeContext";
+import { useAuth } from "../contexts/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import logo from "../assets/logo.webp";
 import {
@@ -19,11 +20,13 @@ import {
     SunIcon,
     QuestionMarkCircledIcon,
     HeartFilledIcon,
+    ExitIcon,
 } from "@radix-ui/react-icons";
 
 export default function Sidebar({ isOpen, onClose, expanded, onExpandedChange }) {
     const { t, isRTL } = useLanguage();
     const { isDark, toggleTheme } = useTheme();
+    const { user, logout, isAuthenticated, loading } = useAuth();
 
     // Use prop if provided, otherwise internal state
     const desktopExpanded = expanded;
@@ -167,23 +170,43 @@ export default function Sidebar({ isOpen, onClose, expanded, onExpandedChange })
             </div>
 
             {/* Auth Section - Bottom */}
-            <div className="p-3 border-t border-gray-200 dark:border-gray-800 space-y-1.5">
-                <Link
-                    to="/login"
-                    onClick={onClose}
-                    className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 transition hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                    <PersonIcon className="h-4 w-4" />
-                    {t("sidebar.login")}
-                </Link>
-                <Link
-                    to="/signup"
-                    onClick={onClose}
-                    className="flex items-center justify-center gap-2 w-full rounded-lg bg-gray-900 dark:bg-gray-100 px-4 py-2.5 text-sm font-medium text-white dark:text-gray-900 transition hover:bg-gray-800 dark:hover:bg-gray-200"
-                >
-                    {t("sidebar.signup")}
-                </Link>
-            </div>
+            {!loading && (
+                <div className="p-3 border-t border-gray-200 dark:border-gray-800 space-y-1.5">
+                    {isAuthenticated ? (
+                        <>
+                            {/* Logout Button */}
+                            <button
+                                onClick={() => {
+                                    logout();
+                                    onClose();
+                                }}
+                                className="flex items-center justify-center gap-2 w-full rounded-lg border border-red-300 dark:border-red-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 transition hover:bg-red-50 dark:hover:bg-red-900/20"
+                            >
+                                <ExitIcon className="h-4 w-4" />
+                                {t("sidebar.logout") || "Logout"}
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link
+                                to="/login"
+                                onClick={onClose}
+                                className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 transition hover:bg-gray-50 dark:hover:bg-gray-700"
+                            >
+                                <PersonIcon className="h-4 w-4" />
+                                {t("sidebar.login")}
+                            </Link>
+                            <Link
+                                to="/signup"
+                                onClick={onClose}
+                                className="flex items-center justify-center gap-2 w-full rounded-lg bg-gray-900 dark:bg-gray-100 px-4 py-2.5 text-sm font-medium text-white dark:text-gray-900 transition hover:bg-gray-800 dark:hover:bg-gray-200"
+                            >
+                                {t("sidebar.signup")}
+                            </Link>
+                        </>
+                    )}
+                </div>
+            )}
         </>
     );
 

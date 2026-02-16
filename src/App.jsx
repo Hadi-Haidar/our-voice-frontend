@@ -10,11 +10,20 @@ import DistrictChat from "./pages/DistrictChat";
 import HelpCenter from "./pages/HelpCenter";
 import Donate from "./pages/Donate";
 import About from "./pages/About";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
 import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
     <Routes>
+      {/* Auth routes - no layout */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/reset-password" element={<ForgotPassword />} />
+
+      {/* Main app routes - with layout */}
       <Route element={<RootLayout />}>
         <Route path="/" element={<Landing />} />
         <Route path="/issues" element={<Issues />} />

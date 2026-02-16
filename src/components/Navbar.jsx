@@ -1,6 +1,7 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import logo from "../assets/logo.webp";
 import { useLanguage } from "../hooks/useLanguage";
+import { useAuth } from "../contexts/AuthContext";
 import ProfileDropdown from "./ProfileDropdown";
 import NotificationBadge from "./NotificationBadge";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
@@ -26,6 +27,7 @@ function AppNavLink({ to, children }) {
 
 export default function Navbar({ onMenuClick }) {
   const { t } = useLanguage();
+  const { isAuthenticated, loading } = useAuth();
 
   return (
     <header className="sticky top-0 z-30 border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm transition-colors duration-200">
@@ -55,8 +57,31 @@ export default function Navbar({ onMenuClick }) {
 
           {/* Right side - Actions */}
           <div className="flex items-center gap-2.5">
-            <NotificationBadge />
-            <ProfileDropdown />
+            {!loading && (
+              <>
+                {isAuthenticated ? (
+                  <>
+                    <NotificationBadge />
+                    <ProfileDropdown />
+                  </>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <Link
+                      to="/login"
+                      className="px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    >
+                      {t("nav.login")}
+                    </Link>
+                    <Link
+                      to="/signup"
+                      className="px-5 py-2.5 text-sm font-semibold text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-all shadow-sm hover:shadow-md"
+                    >
+                      {t("nav.signup")}
+                    </Link>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>

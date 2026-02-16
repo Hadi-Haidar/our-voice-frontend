@@ -24,6 +24,8 @@ const translations = {
             supportPlatform: "Support the Platform",
             openMenu: "Open menu",
             ourVoice: "Our Voice",
+            login: "Login",
+            signup: "Sign Up",
         },
 
         // Hero Section
@@ -170,6 +172,60 @@ const translations = {
             openSidebar: "Open sidebar",
             darkMode: "Dark Mode",
             lightMode: "Light Mode",
+            logout: "Logout",
+        },
+
+        // Authentication
+        auth: {
+            // Login
+            login: {
+                title: "Welcome back",
+                subtitle: "Sign in to continue to Our Voice",
+                emailPlaceholder: "Enter email or username",
+                passwordPlaceholder: "Enter password",
+                forgotPassword: "Forgot password?",
+                continueButton: "Continue",
+                signingIn: "Signing in...",
+                noAccount: "Don't have an account?",
+                signupLink: "Sign up",
+                termsPrefix: "By continuing, you agree to our",
+                terms: "Terms",
+                and: "and",
+                privacy: "Privacy Policy",
+                signInWithGoogle: "Sign in with Google",
+                or: "or",
+                changeEmail: "Change",
+            },
+            // Forgot Password
+            forgotPassword: {
+                title: "Forgot your password?",
+                subtitle: "Enter your email address and we'll send you a link to reset your password.",
+                emailPlaceholder: "Enter your email",
+                button: "Send reset link",
+                loading: "Sending link...",
+                backToLogin: "Back to login",
+                successTitle: "Check your email",
+                successSubtitle: "We've sent a password reset link to {email}",
+            },
+            // Signup
+            signup: {
+                title: "Welcome to Our Voice",
+                subtitle: "Create your account and discover world-class civic engagement",
+                namePlaceholder: "Full name",
+                emailPlaceholder: "Email address",
+                passwordPlaceholder: "Password (6+ characters)",
+                createButton: "Create Account",
+                creatingAccount: "Creating account...",
+                haveAccount: "Already have an account?",
+                signinLink: "Sign in",
+                termsPrefix: "Creating an account means you're okay with our",
+                termsOfService: "Terms of Service",
+                privacyPolicy: "Privacy Policy",
+                and: "and",
+                notificationSettings: "Notification Settings",
+                signUpWithGoogle: "Sign up with Google",
+                or: "or",
+            },
         },
     },
 
@@ -192,6 +248,8 @@ const translations = {
             supportPlatform: "ساهم بدعم المنصة",
             openMenu: "فتح القائمة",
             ourVoice: "صوتنا",
+            login: "تسجيل الدخول",
+            signup: "إنشاء حساب",
         },
 
         // Hero Section
@@ -338,8 +396,61 @@ const translations = {
             openSidebar: "فتح القائمة الجانبية",
             darkMode: "الوضع الداكن",
             lightMode: "الوضع الفاتح",
+            logout: "تسجيل الخروج",
+        },
+
+        // Authentication
+        auth: {
+            // Login
+            login: {
+                title: "مرحباً بعودتك",
+                subtitle: "سجّل دخولك للمتابعة إلى صوتنا",
+                emailPlaceholder: "أدخل البريد الإلكتروني أو اسم المستخدم",
+                passwordPlaceholder: "أدخل كلمة المرور",
+                forgotPassword: "نسيت كلمة المرور؟",
+                continueButton: "متابعة",
+                signingIn: "جاري تسجيل الدخول...",
+                noAccount: "ليس لديك حساب؟",
+                signupLink: "إنشاء حساب",
+                termsPrefix: "بالمتابعة، أنت توافق على",
+                terms: "الشروط",
+                and: "و",
+                privacy: "سياسة الخصوصية",
+                signInWithGoogle: "تسجيل الدخول بواسطة Google",
+                or: "أو",
+                changeEmail: "تغيير",
+            },
+            // Forgot Password
+            forgotPassword: {
+                title: "نسيت كلمة المرور؟",
+                subtitle: "أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور الخاصة بك.",
+                emailPlaceholder: "أدخل بريدك الإلكتروني",
+                button: "إرسال رابط الإعادة",
+                loading: "جاري الإرسال...",
+                backToLogin: "العودة لتسجيل الدخول",
+                successTitle: "تحقق من بريدك الإلكتروني",
+                successSubtitle: "لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى {email}",
+            },
+            // Signup
+            signup: {
+                title: "مرحباً بك في صوتنا",
+                subtitle: "أنشئ حسابك واكتشف المشاركة المدنية على أعلى مستوى",
+                namePlaceholder: "الاسم الكامل",
+                emailPlaceholder: "عنوان البريد الإلكتروني",
+                passwordPlaceholder: "كلمة المرور (6 أحرف على الأقل)",
+                createButton: "إنشاء حساب",
+                creatingAccount: "جاري إنشاء الحساب...",
+                haveAccount: "لديك حساب بالفعل؟",
+                signinLink: "تسجيل الدخول",
+                termsPrefix: "إنشاء حساب يعني أنك توافق على",
+                termsOfService: "شروط الخدمة",
+                privacyPolicy: "سياسة الخصوصية",
+                and: "و",
+                notificationSettings: "إعدادات الإشعارات",
+                signUpWithGoogle: "إنشاء حساب بواسطة Google",
+                or: "أو",
+            },
         },
     },
 };
-
 export default translations;
