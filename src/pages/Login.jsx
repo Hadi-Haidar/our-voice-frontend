@@ -31,7 +31,8 @@ export default function Login() {
             await login({ email, password });
             navigate("/");
         } catch (err) {
-            setError(err.message || "Invalid credentials");
+            const errorMsg = err.response?.data?.message || err.message || "Invalid credentials";
+            setError(errorMsg);
         } finally {
             setLoading(false);
         }

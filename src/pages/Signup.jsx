@@ -42,7 +42,8 @@ export default function Signup() {
             await register(formData);
             navigate("/");
         } catch (err) {
-            setError(err.message || "Failed to create account");
+            const errorMsg = err.response?.data?.message || err.message || "Failed to create account";
+            setError(errorMsg);
         } finally {
             setLoading(false);
         }

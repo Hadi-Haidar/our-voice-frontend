@@ -30,8 +30,8 @@ export function AuthProvider({ children }) {
 
     const register = async (userData) => {
         const response = await authService.register(userData);
-        setUser(response.user);
-        localStorage.setItem("user", JSON.stringify(response.user));
+        // The backend requires OTP verification before logging in,
+        // so we don't set the user or token yet.
         return response;
     };
 

@@ -1,8 +1,6 @@
 import { apiClient } from "./apiClient";
-import { mockAuthService } from "./mockAuthService";
-import { ENV } from "../config/env";
 
-const realAuthService = {
+export const authService = {
     async login(credentials) {
         const response = await apiClient.post("/auth/login", credentials);
         // Assuming your backend returns { user, token }
@@ -13,7 +11,12 @@ const realAuthService = {
     },
 
     async register(userData) {
-        const response = await apiClient.post("/auth/register", userData);
+        // Backend expects full_name, while frontend currently sends name
+        const payload = {
+            ...userData,
+            full_name: userData.name || userData.full_name
+        };
+        const response = await apiClient.post("/auth/register", payload);
         if (response.data.token) {
             localStorage.setItem("token", response.data.token);
         }
@@ -21,10 +24,7 @@ const realAuthService = {
     },
 
     async logout() {
-        await apiClient.post("/auth/logout");
+        // Remove token from local storage
         localStorage.removeItem("token");
     },
 };
-
-// This is the Magic Switch!
-export const authService = ENV.USE_MOCK ? mockAuthService : realAuthService;
