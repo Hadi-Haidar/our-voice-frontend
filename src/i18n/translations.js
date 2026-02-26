@@ -206,6 +206,14 @@ const translations = {
                 backToLogin: "Back to login",
                 successTitle: "Check your email",
                 successSubtitle: "We've sent a password reset link to {email}",
+                resetTitle: "Reset your password",
+                resetSubtitle: "Enter the 6-digit code sent to {email} and your new password.",
+                otpPlaceholder: "Enter 6-digit OTP code",
+                newPasswordPlaceholder: "Enter new password",
+                resetButton: "Reset Password",
+                resettingButton: "Resetting...",
+                didntReceive: "Didn't receive code?",
+                changeEmail: "Change email",
             },
             // Signup
             signup: {
@@ -430,6 +438,14 @@ const translations = {
                 backToLogin: "العودة لتسجيل الدخول",
                 successTitle: "تحقق من بريدك الإلكتروني",
                 successSubtitle: "لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى {email}",
+                resetTitle: "إعادة تعيين كلمة المرور",
+                resetSubtitle: "أدخل الرمز المكون من 6 أرقام المرسل إلى {email} وكلمة المرور الجديدة.",
+                otpPlaceholder: "أدخل رمز التحقق المكون من 6 أرقام",
+                newPasswordPlaceholder: "أدخل كلمة المرور الجديدة",
+                resetButton: "تغيير كلمة المرور",
+                resettingButton: "جاري التغيير...",
+                didntReceive: "لم تستلم الرمز؟",
+                changeEmail: "تغيير البريد الإلكتروني",
             },
             // Signup
             signup: {

@@ -9,7 +9,7 @@ export const apiClient = axios.create({
   },
 });
 
-// Attach token if exists
+// hon mnhat l token eza ken mawjoud (la yt2akdo menna bl backend)
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -18,8 +18,8 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-//discuss what config is
-// config = the request object:
+// ntna2ash shou l config hiye:
+// l config asassiyan hiye object l request:
 
 // {
 //   url: "/pets",

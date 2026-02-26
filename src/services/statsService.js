@@ -1,14 +1,20 @@
 import { statsMock } from "../data/statsMock";
 import { apiClient } from "./apiClient";
-import { ENV } from "../config/env";
 
+// fn la njib arqam l stats (bta3mel real request, w iza feshlet btraje3 mock data)
 export async function fetchStats() {
-  if (ENV.USE_MOCK) {
-    return statsMock; // ✅ array
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 seconds timeout
+
+  try {
+    const response = await apiClient.get("/stats", {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    return response.data;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    console.warn("Stats API failed, falling back to mock:", error.message);
+    return statsMock;
   }
-
-  const res = await apiClient.get("/stats");
-
-  // ✅ Normalize response shape
-  return Array.isArray(res.data) ? res.data : res.data.data;
 }

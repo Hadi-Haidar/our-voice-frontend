@@ -1,0 +1,33 @@
+import {
+    ViewGridIcon,
+    ArchiveIcon,
+    LightningBoltIcon,
+    TrashIcon,
+    SymbolIcon,
+    GlobeIcon,
+    PlusCircledIcon,
+    PersonIcon,
+    TimerIcon,
+    MobileIcon,
+    HeartIcon,
+    LockClosedIcon,
+    BackpackIcon,
+    OpacityIcon,
+} from "@radix-ui/react-icons";
+
+export const CATEGORIES = [
+    { id: "all", labelAr: "الكل", labelEn: "All", icon: ViewGridIcon },
+    { id: "بنية تحتية", labelAr: "بنية تحتية", labelEn: "Infrastructure", icon: ArchiveIcon },
+    { id: "كهرباء", labelAr: "كهرباء", labelEn: "Electricity", icon: LightningBoltIcon },
+    { id: "نفايات", labelAr: "نفايات", labelEn: "Waste", icon: TrashIcon },
+    { id: "سير", labelAr: "سير", labelEn: "Traffic", icon: SymbolIcon },
+    { id: "بيئة", labelAr: "بيئة", labelEn: "Environment", icon: GlobeIcon },
+    { id: "صحة", labelAr: "صحة", labelEn: "Health", icon: PlusCircledIcon },
+    { id: "مياه", labelAr: "مياه", labelEn: "Water", icon: OpacityIcon },
+    { id: "تعليم", labelAr: "تعليم", labelEn: "Education", icon: BackpackIcon },
+    { id: "أمن وسلامة", labelAr: "أمن وسلامة", labelEn: "Public Safety", icon: LockClosedIcon },
+    { id: "مجتمع", labelAr: "مجتمع", labelEn: "Community", icon: PersonIcon },
+    { id: "اتصالات", labelAr: "اتصالات", labelEn: "Telecom", icon: MobileIcon },
+    { id: "حيوانات ضالة", labelAr: "حيوانات ضالة", labelEn: "Stray Animals", icon: HeartIcon },
+    { id: "نقل عام", labelAr: "نقل عام", labelEn: "Public Transport", icon: TimerIcon },
+];

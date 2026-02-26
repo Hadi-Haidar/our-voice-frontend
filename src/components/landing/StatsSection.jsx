@@ -28,15 +28,19 @@ export default function StatsSection() {
   const { stats, loading } = useStats();
   const { t } = useLanguage();
 
-
-  if (loading) return null; // no layout shift
-
+  // We use mock labels if stats are not yet loaded to maintain layout
+  const displayStats = stats.length > 0 ? stats : [
+    { label: "stats.reportedIssues", value: 0 },
+    { label: "stats.communityVotes", value: 0 },
+    { label: "stats.activeCitizens", value: 0 },
+    { label: "stats.resolvedProblems", value: 0 },
+  ];
 
   return (
     <LazyMotion features={domAnimation}>
       <section className="rounded-3xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-8 sm:p-12 transition-colors duration-200">
         <div className="grid gap-8 text-center sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat, i) => (
+          {displayStats.map((stat, i) => (
             <m.div
               key={stat.label}
               initial={{ opacity: 0, y: 16 }}
@@ -45,8 +49,14 @@ export default function StatsSection() {
               transition={{ duration: 0.4, delay: i * 0.05 }}
               className="space-y-2"
             >
-              <div className="text-gray-900 dark:text-gray-100">
-                <CountUp value={stat.value} />
+              <div className={`text-gray-900 dark:text-gray-100 ${loading ? "animate-pulse" : ""}`}>
+                {loading ? (
+                  <span className="text-3xl font-bold sm:text-4xl inline-flex items-center justify-center">
+                    0<span className="text-red-600 leading-none ms-1">+</span>
+                  </span>
+                ) : (
+                  <CountUp value={stat.value} />
+                )}
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">{t(stat.label)}</p>
             </m.div>

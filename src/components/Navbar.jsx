@@ -49,7 +49,7 @@ export default function Navbar({ onMenuClick }) {
               <img
                 src={logo}
                 alt="Our Voice Lebanon logo"
-                className="h-10 w-auto object-contain"
+                className="hidden sm:block h-10 w-auto object-contain"
               />
               <span className="hidden sm:inline">{t("nav.ourVoice")}</span>
             </NavLink>
@@ -66,18 +66,7 @@ export default function Navbar({ onMenuClick }) {
                   </>
                 ) : (
                   <div className="flex items-center gap-3">
-                    <Link
-                      to="/login"
-                      className="px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                    >
-                      {t("nav.login")}
-                    </Link>
-                    <Link
-                      to="/signup"
-                      className="px-5 py-2.5 text-sm font-semibold text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-all shadow-sm hover:shadow-md"
-                    >
-                      {t("nav.signup")}
-                    </Link>
+                    {/* Sign in/up removed as per user request */}
                   </div>
                 )}
               </>

@@ -12,9 +12,12 @@ export default function Login() {
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const [step, setStep] = useState(1); // 1 = email, 2 = password
+
+    // step 1 = nsakkir l email, step 2 = l password
+    const [step, setStep] = useState(1);
     const [password, setPassword] = useState("");
 
+    // fn la net2akkad men 2awwaliyit l email
     const handleEmailSubmit = (e) => {
         e.preventDefault();
         if (email) {
@@ -22,6 +25,7 @@ export default function Login() {
         }
     };
 
+    // fn la ndakhel l ma3loumet w na3mel login
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
         setError("");
@@ -40,10 +44,10 @@ export default function Login() {
 
     return (
         <div className={`min-h-screen flex ${isRTL ? "flex-row-reverse text-right" : "flex-row"}`}>
-            {/* Left Side - Form */}
+            {/* ch2fe 3al shemel - l Form */}
             <div className="flex-1 flex items-center justify-center px-8 py-12 bg-white dark:bg-gray-950">
                 <div className="w-full max-w-md">
-                    {/* Back Button */}
+                    {/* fa2se l rjou3 */}
                     <Link to="/" className="inline-flex items-center justify-center w-10 h-10 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white mb-8 transition-all">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -51,7 +55,7 @@ export default function Login() {
                     </Link>
 
 
-                    {/* Header */}
+                    {/* l 3enwen */}
                     <div className="mb-8">
 
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -62,7 +66,7 @@ export default function Login() {
                         </p>
                     </div>
 
-                    {/* Google Sign In */}
+                    {/* nsajjel bl Google */}
                     <button
                         type="button"
                         className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 dark:border-gray-800 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all mb-6"
@@ -76,7 +80,7 @@ export default function Login() {
                         <span>{t("auth.login.signInWithGoogle")}</span>
                     </button>
 
-                    {/* Divider */}
+                    {/* fasel */}
                     <div className="relative my-8">
                         <div className="absolute inset-0 flex items-center">
                             <div className="w-full border-t border-gray-200 dark:border-gray-800"></div>
@@ -159,7 +163,7 @@ export default function Login() {
                         </form>
                     )}
 
-                    {/* Footer */}
+                    {/* Footer l tahtani */}
                     <p className="mt-8 text-sm text-center text-gray-600 dark:text-gray-400">
                         {t("auth.login.termsPrefix")}{" "}
                         <Link to="/terms" className="text-gray-900 dark:text-white hover:underline">
@@ -181,14 +185,14 @@ export default function Login() {
                 </div>
             </div>
 
-            {/* Right Side - Illustration (Full Bleed) */}
+            {/* ch2fe 3al yamin - Sura */}
             <div className="hidden lg:block flex-1 relative">
                 <img
                     src={authIllustration}
                     alt="Our Voice Lebanon - Citizens United"
                     className="absolute inset-0 w-full h-full object-cover"
                     onError={(e) => {
-                        // Fallback gradient if image doesn't load
+                        // nsalla7 l sora ya3ni
                         e.target.parentElement.classList.add('bg-gradient-to-br', 'from-red-600', 'via-white', 'to-green-600');
                         e.target.style.display = 'none';
                     }}
