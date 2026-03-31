@@ -22,6 +22,11 @@ export default function RootLayout() {
 
   const { pathname } = useLocation();
 
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   // Hide footer on specific pages
   const hideFooterRoutes = [
     "/issues",
@@ -48,10 +53,10 @@ export default function RootLayout() {
 
       {/* Main content - offset for sidebar on desktop */}
       <div
-        className={`flex-1 transition-[margin] duration-300 ease-in-out ${sidebarExpanded ? "lg:ms-64" : "lg:ms-16"
+        className={`flex-1 flex flex-col transition-[margin] duration-300 ease-in-out will-change-[margin] ${sidebarExpanded ? "lg:ms-64" : "lg:ms-16"
           }`}
       >
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
+        <main className="flex-1 mx-auto w-full max-w-5xl px-4 py-8">
           <Outlet />
         </main>
 

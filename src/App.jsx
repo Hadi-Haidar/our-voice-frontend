@@ -15,6 +15,7 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ReportIssue from "./pages/ReportIssue";
 import IssueDetails from "./pages/IssueDetails";
+import EditIssue from "./pages/EditIssue";
 import NotFound from "./pages/NotFound";
 
 export default function App() {
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/issues" element={<Issues />} />
         <Route path="/issues/:id" element={<IssueDetails />} />
+        <Route path="/issues/:id/edit" element={<EditIssue />} />
         <Route path="/report-issue" element={<ReportIssue />} />
         <Route path="/polls" element={<Polls />} />
         <Route path="/announcements" element={<Announcements />} />

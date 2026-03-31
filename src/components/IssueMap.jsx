@@ -77,8 +77,8 @@ export default function IssueMap({ coordinates, address, isRTL }) {
                                     zoomControl={false}
                                 >
                                     <TileLayer
-                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                        attribution='&copy; Google Maps'
+                                        url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
                                     />
                                     <Marker position={position} icon={customIcon} />
                                     <ChangeView center={position} />
@@ -86,9 +86,6 @@ export default function IssueMap({ coordinates, address, isRTL }) {
 
                                 {/* Modern Map Controls Overlay */}
                                 <div className="absolute top-4 right-4 flex flex-col gap-2 z-[400]">
-                                    <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-2 rounded-xl border border-white/20 shadow-lg text-[10px] font-bold text-gray-900 dark:text-white">
-                                        GPS VERIFIED
-                                    </div>
                                 </div>
 
                                 <div className="absolute bottom-4 left-4 right-4 z-[400]">

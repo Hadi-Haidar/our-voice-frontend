@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { MagnifyingGlassIcon, Crosshair1Icon } from "@radix-ui/react-icons";
 
-// Fix for default marker icons in Leaflet with Vite/Webpack
+// Fix for default marker icons
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
@@ -19,22 +20,17 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-function LocationMarker({ position, setPosition, isRTL }) {
+function LocationMarker({ position, setPosition }) {
     const map = useMap();
-
     useMapEvents({
         click(e) {
             setPosition(e.latlng);
             map.flyTo(e.latlng, map.getZoom());
         },
     });
-
-    return position === null ? null : (
-        <Marker position={position}></Marker>
-    );
+    return position === null ? null : <Marker position={position}></Marker>;
 }
 
-// Separate component to handle centering
 function ChangeView({ center }) {
     const map = useMap();
     useEffect(() => {
@@ -45,11 +41,13 @@ function ChangeView({ center }) {
     return null;
 }
 
-export default function LocationPicker({ selectedPosition, setSelectedPosition, isRTL }) {
-    const defaultCenter = [33.8938, 35.5018]; // Beirut center
-    const [address, setAddress] = useState(isRTL ? "بيروت، لبنان" : "Beirut, Lebanon");
+export default function LocationPicker({ selectedPosition, setSelectedPosition, onAddressSelect, isRTL }) {
+    const defaultCenter = [33.8938, 35.5018]; // Beirut
+    const [address, setAddress] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [isSearching, setIsSearching] = useState(false);
 
-    // Reverse geocoding (simplified using Nominatim)
+    // Reverse geocoding when position changes
     useEffect(() => {
         if (selectedPosition) {
             fetch(
@@ -57,13 +55,51 @@ export default function LocationPicker({ selectedPosition, setSelectedPosition, 
             )
                 .then((res) => res.json())
                 .then((data) => {
-                    if (data.display_name) {
-                        setAddress(data.display_name);
+                    if (data.address) {
+                        const a = data.address;
+                        // Pick the most relevant parts
+                        const parts = [];
+
+                        // 1. Precise location (Road, House number, or building name)
+                        const street = a.road || a.pedestrian || a.suburb || a.neighbourhood || a.village || a.hamlet;
+                        if (street) parts.push(street);
+
+                        // 2. City or region
+                        const city = a.city || a.town || a.city_district || a.municipality;
+                        if (city && city !== street) parts.push(city);
+
+                        const addr = parts.join(", ") || data.display_name;
+                        setAddress(addr);
+                        if (onAddressSelect) onAddressSelect(addr);
+                    } else {
+                        const addr = data.display_name || "";
+                        setAddress(addr);
+                        if (onAddressSelect) onAddressSelect(addr);
                     }
                 })
                 .catch(() => { });
         }
-    }, [selectedPosition, isRTL]);
+    }, [selectedPosition, isRTL, onAddressSelect]);
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        if (!searchQuery.trim()) return;
+
+        try {
+            setIsSearching(true);
+            // Bias search towards Lebanon
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&countrycodes=lb&limit=1`);
+            const data = await res.json();
+            if (data && data.length > 0) {
+                const newPos = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+                setSelectedPosition(newPos);
+            }
+        } catch (err) {
+            console.error("Search error:", err);
+        } finally {
+            setIsSearching(false);
+        }
+    };
 
     const handleLocateMe = () => {
         if (navigator.geolocation) {
@@ -81,47 +117,62 @@ export default function LocationPicker({ selectedPosition, setSelectedPosition, 
 
     return (
         <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-grow">
                     <input
-                        className={`w-full rounded-xl border-gray-200 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700 text-gray-900 dark:text-white focus:border-red-600 focus:ring-red-600/20 py-3 ${isRTL ? "pr-10 pl-4" : "pl-10 pr-4"} outline-none transition-all truncate`}
-                        value={address}
-                        readOnly
-                        placeholder={isRTL ? "العنوان المحدد" : "Selected address"}
-                        type="text"
+                        className={`w-full rounded-xl border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 text-gray-900 dark:text-white focus:border-red-600 focus:ring-red-600/20 py-3 ${isRTL ? "pr-10 pl-4" : "pl-10 pr-4"} outline-none transition-all`}
+                        placeholder={isRTL ? "ابحث عن مدينة أو شارع..." : "Search for a city or street..."}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleSearch(e);
+                            }
+                        }}
                     />
-                    <div className={`pointer-events-none absolute inset-y-0 ${isRTL ? "right-0 pr-3" : "left-0 pl-3"} flex items-center text-gray-400`}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                    </div>
+                    <button
+                        type="button"
+                        onClick={handleSearch}
+                        className={`absolute inset-y-0 ${isRTL ? "right-0 pr-3" : "left-0 pl-3"} flex items-center text-gray-400 hover:text-red-600 transition-colors`}
+                    >
+                        {isSearching ? (
+                            <div className="animate-spin rounded-full h-5 w-5 border-2 border-red-600 border-t-transparent" />
+                        ) : (
+                            <MagnifyingGlassIcon className="h-5 w-5" />
+                        )}
+                    </button>
                 </div>
                 <button
                     onClick={handleLocateMe}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all whitespace-nowrap overflow-hidden w-full sm:w-auto"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all whitespace-nowrap overflow-hidden w-full sm:w-auto"
                     type="button"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="2" x2="12" y2="5"></line><line x1="12" y1="19" x2="12" y2="22"></line><line x1="2" y1="12" x2="5" y2="12"></line><line x1="19" y1="12" x2="22" y2="12"></line></svg>
-                    {isRTL ? "حدّد موقعي" : "Locate Me"}
+                    <Crosshair1Icon className="h-5 w-5 text-red-600" />
+                    {isRTL ? "تحديد موقعي" : "Locate Me"}
                 </button>
             </div>
 
-            <div className="relative h-64 w-full rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-100 dark:bg-gray-800 z-0">
+            <div className="relative h-72 w-full rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-100 dark:bg-gray-800 z-0">
                 <MapContainer
                     center={selectedPosition || defaultCenter}
-                    zoom={13}
+                    zoom={selectedPosition ? 16 : 13}
                     style={{ height: "100%", width: "100%" }}
                     zoomControl={false}
                 >
                     <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; Google Maps'
+                        url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
                     />
-                    <LocationMarker position={selectedPosition} setPosition={setSelectedPosition} isRTL={isRTL} />
+                    <LocationMarker position={selectedPosition} setPosition={setSelectedPosition} />
                     <ChangeView center={selectedPosition} />
                 </MapContainer>
 
-                <div className={`absolute bottom-3 ${isRTL ? "left-3 text-left" : "right-3 text-right"} bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-sm text-gray-900 dark:text-white border border-white/20 z-[400] max-w-[200px] truncate`}>
-                    {address}
-                </div>
+                {address && (
+                    <div className={`absolute bottom-3 ${isRTL ? "left-3 text-left" : "right-3 text-right"} bg-white/90 dark:bg-gray-900/90 backdrop-blur-md px-4 py-2 rounded-xl text-xs font-bold shadow-xl text-gray-900 dark:text-white border border-white/20 z-[400] max-w-[80%] truncate`}>
+                        {address}
+                    </div>
+                )}
             </div>
         </div>
     );

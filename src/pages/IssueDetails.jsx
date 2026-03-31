@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { m, LazyMotion, domAnimation } from "framer-motion";
 import { useLanguage } from "../hooks/useLanguage";
-import { issuesMock } from "../data/issuesMock";
+import { CATEGORIES } from "../data/categories";
+import { issueService } from "../services/issueService";
 import { getMockComments } from "../data/commentsMock";
 import {
     ArrowLeftIcon,
@@ -16,31 +17,170 @@ import {
     CheckCircledIcon,
     EyeNoneIcon,
     PaperPlaneIcon,
-    DotsHorizontalIcon
+    DotsHorizontalIcon,
+    PersonIcon,
+    Cross1Icon,
+    Pencil1Icon,
+    TrashIcon
 } from "@radix-ui/react-icons";
 import IssueMap from "../components/IssueMap";
+import { useAuth } from "../contexts/AuthContext";
+import { useConfirm } from "../hooks/useConfirm";
 
 export default function IssueDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { isRTL } = useLanguage();
+    const { user } = useAuth();
 
-    const issue = issuesMock.find((i) => i.id === parseInt(id));
-
+    const [issue, setIssue] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [commentText, setCommentText] = useState("");
+    const [copied, setCopied] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const confirm = useConfirm();
+
+    const handleDelete = async () => {
+        try {
+            const ok = await confirm({
+                title: isRTL ? "حذف البلاغ" : "Delete Issue",
+                message: isRTL
+                    ? "هل أنت متأكد أنك تريد حذف هذا البلاغ؟ لا يمكن التراجع عن هذا الإجراء وسيتم حذف جميع التعليقات المرتبطة به."
+                    : "Are you sure you want to delete this issue? This action cannot be undone and all associated comments will be deleted.",
+                confirmText: isRTL ? "حذف" : "Delete"
+            });
+
+            if (ok) {
+                setDeleting(true);
+                const response = await issueService.deleteIssue(id);
+                if (response.success) {
+                    navigate("/issues");
+                }
+            }
+        } catch (err) {
+            console.error("Error deleting issue:", err);
+            alert(isRTL ? "فشل حذف البلاغ" : "Failed to delete issue");
+        } finally {
+            setDeleting(false);
+        }
+    };
+
+    useEffect(() => {
+        const fetchIssue = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await issueService.getIssueById(id);
+                if (response.success) {
+                    setIssue(response.data);
+                } else {
+                    setError(isRTL ? "فشل تحميل البيانات" : "Failed to load data");
+                }
+            } catch (err) {
+                console.error("Error fetching issue:", err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchIssue();
+    }, [id, isRTL]);
+
+    const getCategoryLabel = (catId) => {
+        const cat = CATEGORIES.find(c => c.id === catId);
+        if (!cat) return catId;
+        return isRTL ? cat.labelAr : cat.labelEn;
+    };
+
+    const formatTime = (dateStr, ar) => {
+        if (!dateStr) return "";
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diff = now - date;
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+
+        if (days > 0) return ar ? `منذ ${days} يوم` : `${days}d ago`;
+        if (hours > 0) return ar ? `منذ ${hours} ساعة` : `${hours}h ago`;
+        if (minutes > 0) return ar ? `منذ ${minutes} دقيقة` : `${minutes}m ago`;
+        return ar ? "الآن" : "Just now";
+    };
+
+    const statusLabel = (s, ar) => {
+        if (s === "pending") return ar ? "قيد الانتظار" : "Pending";
+        if (s === "in_progress") return ar ? "قيد المعالجة" : "In Progress";
+        if (s === "solved" || s === "resolved") return ar ? "تم الحل" : "Solved";
+        return s;
+    };
+
+    const handleShare = async () => {
+        if (!issue) return;
+        const shareData = {
+            title: issue.title,
+            text: issue.description,
+            url: window.location.href,
+        };
+
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+            } else {
+                await navigator.clipboard.writeText(window.location.href);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            }
+        } catch (err) {
+            console.error("Error sharing:", err);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex-1 flex items-center justify-center p-8 min-h-[60vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex-1 flex flex-col items-center justify-center p-8 w-full max-w-7xl mx-auto min-h-[60vh] text-center gap-4">
+                <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-600 mb-2">
+                    <Cross1Icon className="h-8 w-8" />
+                </div>
+                <h2 className="text-2xl font-bold dark:text-white">{isRTL ? "عذراً، حدث خطأ ما" : "Oops, something went wrong"}</h2>
+                <p className="text-gray-500 dark:text-gray-400 max-w-md">{error}</p>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="bg-red-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
+                >
+                    {isRTL ? "إعادة المحاولة" : "Try Again"}
+                </button>
+            </div>
+        );
+    }
 
     if (!issue) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 w-full max-w-7xl mx-auto min-h-[60vh]">
-                <h2 className="text-2xl font-bold mb-4 dark:text-white">{isRTL ? "المشكلة غير موجودة" : "Issue not found"}</h2>
-                <button onClick={() => navigate("/issues")} className="text-red-600 hover:underline font-medium">
+            <div className="flex-1 flex flex-col items-center justify-center p-8 w-full max-w-7xl mx-auto min-h-[60vh] text-center gap-4">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-400 mb-2">
+                    <EyeNoneIcon className="h-8 w-8" />
+                </div>
+                <h2 className="text-2xl font-bold dark:text-white">{isRTL ? "المشكلة غير موجودة" : "Issue not found"}</h2>
+                <button onClick={() => navigate("/issues")} className="text-red-600 hover:underline font-bold">
                     {isRTL ? "العودة للمشاكل" : "Back to Issues"}
                 </button>
             </div>
         );
     }
 
-    const mockComments = getMockComments(isRTL);
+    // Fallback if comments are missing from backend
+    const commentsToShow = issue.comments && issue.comments.length > 0
+        ? issue.comments
+        : getMockComments(isRTL);
 
     return (
         <LazyMotion features={domAnimation}>
@@ -48,7 +188,7 @@ export default function IssueDetails() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="flex-1 overflow-y-auto px-4 py-8 lg:px-8 w-full max-w-4xl mx-auto pb-20"
+                className="px-4 py-8 lg:px-8 w-full max-w-4xl mx-auto pb-8"
             >
                 {/* Back button */}
                 <button
@@ -63,14 +203,42 @@ export default function IssueDetails() {
                     {/* Header & Status */}
                     <div className="p-4 sm:p-6 md:p-8 pb-4">
                         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                            <span className={`${issue.categoryColor} text-xs font-semibold px-3 py-1 rounded-full`}>
-                                {issue.category}
+                            <span className="bg-red-50 text-red-700 dark:bg-red-900/40 dark:text-red-300 text-xs font-semibold px-3 py-1 rounded-full border border-red-100 dark:border-red-800/50">
+                                {getCategoryLabel(issue.category_id)}
                             </span>
-                            {issue.status === "resolved" && (
-                                <div className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm shadow-emerald-500/20">
-                                    <CheckCircledIcon className="h-4 w-4" />
-                                    {isRTL ? "تم الحل" : "Resolved"}
-                                </div>
+                            <div className={`text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm shadow-black/5 ${(issue.status === 'solved' || issue.status === 'resolved') ? 'bg-emerald-500 text-white shadow-emerald-500/20' :
+                                issue.status === 'in_progress' ? 'bg-blue-500 text-white shadow-blue-500/20' :
+                                    'bg-orange-500 text-white shadow-orange-500/20'
+                                }`}>
+                                {(issue.status === 'solved' || issue.status === 'resolved') && <CheckCircledIcon className="h-4 w-4" />}
+                                {statusLabel(issue.status, isRTL)}
+                            </div>
+
+                            {/* Edit Button for Author */}
+                            {user?.id === issue.author_id && (
+                                <button
+                                    onClick={() => navigate(`/issues/${id}/edit`)}
+                                    className="ms-auto flex items-center gap-1.5 px-4 py-2 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-bold rounded-xl transition-all border border-gray-100 dark:border-gray-700 active:scale-95"
+                                >
+                                    <Pencil1Icon className="h-4 w-4 text-red-600" />
+                                    {isRTL ? "تعديل المنشور" : "Edit Post"}
+                                </button>
+                            )}
+
+                            {/* Delete Button for Author */}
+                            {user?.id === issue.author_id && (
+                                <button
+                                    onClick={handleDelete}
+                                    disabled={deleting}
+                                    className="flex items-center gap-1.5 px-4 py-2 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-bold rounded-xl transition-all border border-red-100 dark:border-red-900/30 active:scale-95 disabled:opacity-50"
+                                >
+                                    {deleting ? (
+                                        <div className="animate-spin rounded-full h-3 w-3 border-2 border-red-600/30 border-t-red-600"></div>
+                                    ) : (
+                                        <TrashIcon className="h-4 w-4" />
+                                    )}
+                                    {isRTL ? "حذف" : "Delete"}
+                                </button>
                             )}
                         </div>
 
@@ -81,33 +249,30 @@ export default function IssueDetails() {
                         <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
                             <div className="flex items-center gap-1.5">
                                 <DrawingPinIcon className="h-4 w-4 shrink-0 text-red-500" />
-                                <span>{issue.location}</span>
-                                {issue.coordinates && (
-                                    <span className="text-[10px] font-bold bg-red-50 text-red-600 px-1.5 py-0.5 rounded border border-red-100 dark:bg-red-900/20 dark:border-red-800">GPS</span>
-                                )}
+                                <span>{issue.location_text}</span>
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <ClockIcon className="h-4 w-4 shrink-0" />
-                                <span>{issue.time}</span>
+                                <span>{formatTime(issue.created_at, isRTL)}</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Media */}
-                    {(issue.image || issue.isVideo) && (
+                    {(issue.image_url || issue.video_url) && (
                         <div className="w-full relative bg-gray-100 dark:bg-gray-800 aspect-video md:aspect-[21/9]">
-                            {issue.isVideo && (
+                            {issue.video_url && (
                                 <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
                                     <div className="w-16 h-16 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-md">
                                         <PlayIcon className="h-8 w-8 text-white ml-1" />
                                     </div>
                                 </div>
                             )}
-                            {issue.image && (
+                            {issue.image_url && (
                                 <img
                                     alt={issue.title}
-                                    className={`w-full h-full object-cover ${issue.status === "resolved" ? "grayscale opacity-80" : ""}`}
-                                    src={issue.image}
+                                    className={`w-full h-full object-cover ${(issue.status === "solved" || issue.status === "resolved") ? "grayscale opacity-80" : ""}`}
+                                    src={issue.image_url}
                                 />
                             )}
                         </div>
@@ -120,50 +285,61 @@ export default function IssueDetails() {
                         </p>
 
                         {/* Real Location Map */}
-                        {issue.coordinates && (
-                            <IssueMap coordinates={issue.coordinates} address={issue.location} isRTL={isRTL} />
+                        {issue.lat && issue.lng && (
+                            <IssueMap coordinates={{ lat: issue.lat, lng: issue.lng }} address={issue.location_text} isRTL={isRTL} />
                         )}
                     </div>
 
                     {/* Footer stats */}
                     <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-5 border-t border-gray-100 dark:border-gray-800 flex flex-wrap justify-between items-center gap-4 bg-gray-50 dark:bg-gray-800/20">
                         <div className="flex items-center gap-2">
-                            {issue.author.image ? (
+                            {issue.author?.avatar_url ? (
                                 <img
-                                    alt={issue.author.name}
+                                    alt={issue.author?.full_name}
                                     className="w-8 h-8 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700"
-                                    src={issue.author.image}
+                                    src={issue.author?.avatar_url}
                                 />
                             ) : (
                                 <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500">
-                                    <EyeNoneIcon className="h-4 w-4" />
+                                    <PersonIcon className="h-4 w-4" />
                                 </div>
                             )}
                             <div className="flex flex-col">
                                 <span className="text-xs text-gray-500">{isRTL ? "نشر بواسطة" : "Posted by"}</span>
-                                <span className="text-sm font-bold text-gray-900 dark:text-white">{issue.author.name}</span>
+                                <span className="text-sm font-bold text-gray-900 dark:text-white">{issue.author?.full_name || (isRTL ? "مستخدم" : "User")}</span>
                             </div>
                         </div>
 
                         <div className="flex gap-4">
                             <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-red-400 hover:text-red-600 transition-colors shadow-sm text-gray-700 dark:text-gray-300">
                                 <ArrowUpIcon className="h-4 w-4" />
-                                <span className="font-bold">{issue.upvotes}</span>
+                                <span className="font-bold">{issue.upvotes_count || 0}</span>
                             </button>
-                            <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:text-blue-500 transition-colors shadow-sm text-gray-700 dark:text-gray-300">
+                            <button
+                                onClick={handleShare}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all shadow-sm font-medium ${copied
+                                    ? "bg-green-500 border-green-500 text-white"
+                                    : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:text-blue-500 text-gray-700 dark:text-gray-300"
+                                    }`}
+                            >
                                 <Share1Icon className="h-4 w-4" />
-                                <span className="font-bold hidden sm:inline">{isRTL ? "مشاركة" : "Share"}</span>
+                                <span className="font-bold hidden sm:inline">
+                                    {copied
+                                        ? (isRTL ? "تم النسخ!" : "Link Copied!")
+                                        : (isRTL ? "مشاركة" : "Share")
+                                    }
+                                </span>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 {/* Comments Section */}
-                <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden mb-12">
+                <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden mb-4">
                     <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-5 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
                         <ChatBubbleIcon className="h-5 w-5 text-gray-400 shrink-0" />
                         <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                            {isRTL ? `التعليقات (${issue.comments})` : `Comments (${issue.comments})`}
+                            {isRTL ? `التعليقات (${issue.comments_count || 0})` : `Comments (${issue.comments_count || 0})`}
                         </h2>
                     </div>
 
@@ -193,21 +369,21 @@ export default function IssueDetails() {
 
                         {/* Comment list */}
                         <div className="space-y-6 pt-4">
-                            {mockComments.map((comment, i) => (
-                                <div key={comment.id}>
+                            {commentsToShow.map((comment, i) => (
+                                <div key={comment.id || i}>
                                     <div className="flex gap-3">
-                                        {comment.author.image ? (
-                                            <img src={comment.author.image} alt={comment.author.name} className="w-10 h-10 rounded-full object-cover shrink-0 ring-1 ring-gray-200 dark:ring-gray-700" />
+                                        {comment.author?.avatar_url ? (
+                                            <img src={comment.author.avatar_url} alt={comment.author.full_name} className="w-10 h-10 rounded-full object-cover shrink-0 ring-1 ring-gray-200 dark:ring-gray-700" />
                                         ) : (
                                             <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0 border border-gray-200 dark:border-gray-700">
-                                                <EyeNoneIcon className="h-4 w-4 text-gray-400" />
+                                                <PersonIcon className="h-4 w-4 text-gray-400" />
                                             </div>
                                         )}
                                         <div className="flex-1 overflow-hidden">
                                             <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl rounded-tr-none px-4 py-3 border border-gray-100 dark:border-gray-800">
                                                 <div className="flex items-center gap-2 mb-1">
-                                                    <span className="font-bold text-gray-900 dark:text-white text-sm">{comment.author.name}</span>
-                                                    <span className="text-xs text-gray-400">{comment.time}</span>
+                                                    <span className="font-bold text-gray-900 dark:text-white text-sm">{comment.author?.full_name || (isRTL ? "مستخدم" : "User")}</span>
+                                                    <span className="text-xs text-gray-400">{formatTime(comment.created_at || new Date(), isRTL)}</span>
                                                 </div>
                                                 <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                                                     {comment.text}
@@ -215,17 +391,13 @@ export default function IssueDetails() {
                                             </div>
                                             <div className="flex items-center gap-4 text-xs font-medium text-gray-500 mt-2 ml-2 mr-2">
                                                 <button className="hover:text-red-600 transition-colors">{isRTL ? "رد" : "Reply"}</button>
-                                                <button className="flex items-center gap-1 hover:text-red-600 transition-colors">
-                                                    <ArrowUpIcon className="h-3 w-3" />
-                                                    {comment.upvotes}
-                                                </button>
                                             </div>
                                         </div>
                                         <button className="self-start text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mt-2">
                                             <DotsHorizontalIcon className="h-4 w-4" />
                                         </button>
                                     </div>
-                                    {i < mockComments.length - 1 && <hr className="border-gray-100 dark:border-gray-800 mt-6" />}
+                                    {i < commentsToShow.length - 1 && <hr className="border-gray-100 dark:border-gray-800 mt-6" />}
                                 </div>
                             ))}
                         </div>

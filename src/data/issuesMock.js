@@ -3,7 +3,7 @@ export const issuesMock = [
         id: 1,
         title: "حفرة كبيرة في شارع الحمرا الرئيسي",
         description: "تسببت هذه الحفرة بأضرار لثلاث سيارات اليوم. نرجو من البلدية التدخل السريع قبل وقوع حوادث سير.",
-        category: "بنية تحتية",
+        category: 1,
         location: "بيروت، الحمرا",
         coordinates: { lat: 33.8965, lng: 35.4825 },
         time: "منذ ساعتين",
@@ -19,7 +19,7 @@ export const issuesMock = [
         id: 2,
         title: "تراكم النفايات في منطقة الأشرفية",
         description: "تمت إزالة النفايات المتراكمة بالتعاون مع البلدية وجمعية محلية. شكراً لكل من ساهم.",
-        category: "نفايات",
+        category: 2,
         location: "بيروت، الأشرفية",
         coordinates: { lat: 33.8877, lng: 35.5204 },
         time: "تم الحل أمس",
@@ -35,7 +35,7 @@ export const issuesMock = [
         id: 3,
         title: "انقطاع التيار الكهربائي عن الحي الغربي",
         description: "المولد الخاص بالحي متوقف منذ البارحة ولا يوجد أي استجابة من صاحب المولد. نحتاج لحل جذري لهذه المشكلة المتكررة.",
-        category: "كهرباء",
+        category: 3,
         location: "صيدا، الحي الغربي",
         time: "منذ 5 ساعات",
         upvotes: 42,
@@ -50,7 +50,7 @@ export const issuesMock = [
         id: 4,
         title: "إشارة مرور معطلة تسبب زحمة خانقة",
         description: "الإشارة عند تقاطع المتحف لا تعمل منذ الصباح، مما يسبب فوضى عارمة وخطر على المشاة.",
-        category: "سير",
+        category: 4,
         location: "بيروت، المتحف",
         coordinates: { lat: 33.8785, lng: 35.5159 },
         time: "منذ 40 دقيقة",
@@ -66,7 +66,7 @@ export const issuesMock = [
         id: 5,
         title: "تلوث في مجرى نهر الليطاني",
         description: "لاحظنا تدفق مياه آسنة ولونها غريب في مجرى النهر اليوم، الرائحة لا تطاق.",
-        category: "بيئة",
+        category: 5,
         location: "البقاع، الليطاني",
         time: "منذ 3 ساعات",
         upvotes: 210,
@@ -81,7 +81,7 @@ export const issuesMock = [
         id: 6,
         title: "نقص أدوية مزمنة في المستوصف",
         description: "المستوصف المحلي يعاني من انقطاع أدوية الضغط والسكري منذ أسبوعين. كبار السن في خطر.",
-        category: "صحة",
+        category: 6,
         location: "طرابلس، الميناء",
         time: "منذ يوم واحد",
         upvotes: 156,
@@ -93,4 +93,5 @@ export const issuesMock = [
         author: { name: "هالة ر.", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuD-VyRIyQK_rxxOeWhHvPp6Ame8LW3qxqV97tqttURPCzJTUYeWql4lG_dp0zPw3ses7flL-EYTzsotVHyjTrgr1q3B4FFR3pWHz2P1vNemIbkC_4PU6mVSXpebE9oXd0piNwCYwbY8L2V-cAqxPCHV0dhbfew0zoNeh2aEoZxaoG4LRK43eTlVkdpvHkKLdg00RuRtyA9wtdYE7ZUR2xb2hTfyWk9LR4aSyn7T_zJSZ30H_iF07zZTNCR3SdD3KPe2aTI5KOg-Ax8a" }
     }
 ];
+
 

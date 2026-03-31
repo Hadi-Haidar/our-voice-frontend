@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { m, LazyMotion, domAnimation } from "framer-motion";
 import { useLanguage } from "../hooks/useLanguage";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import LocationPicker from "../components/ReportIssue/LocationPicker";
 import CustomSelect from "../components/CustomSelect";
 import { CATEGORIES } from "../data/categories";
@@ -11,118 +11,68 @@ import {
     UploadIcon,
     Cross2Icon,
     PaperPlaneIcon,
-    ExclamationTriangleIcon
+    ExclamationTriangleIcon,
+    UpdateIcon
 } from "@radix-ui/react-icons";
 
-export default function ReportIssue() {
+export default function EditIssue() {
+    const { id } = useParams();
     const { isRTL } = useLanguage();
     const navigate = useNavigate();
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
+
+    // Form fields
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("");
     const [locationText, setLocationText] = useState("");
     const [selectedPosition, setSelectedPosition] = useState(null);
     const [images, setImages] = useState([]); // { url: string, type: 'image' | 'video' }
-    const [isAnonymous, setIsAnonymous] = useState(false);
 
-    const compressImage = (file) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (event) => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement("canvas");
-                    let width = img.width;
-                    let height = img.height;
-
-                    const MAX_RES = 1920;
-                    if (width > height) {
-                        if (width > MAX_RES) {
-                            height *= MAX_RES / width;
-                            width = MAX_RES;
-                        }
-                    } else {
-                        if (height > MAX_RES) {
-                            width *= MAX_RES / height;
-                            height = MAX_RES;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext("2d");
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    canvas.toBlob((blob) => {
-                        resolve(blob);
-                    }, "image/jpeg", 0.85);
-                };
-                img.onerror = (err) => reject(err);
-            };
-            reader.onerror = (err) => reject(err);
-        });
-    };
-
-    const handleFileChange = async (e) => {
-        const files = Array.from(e.target.files);
-        const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB
-        const MAX_VIDEO_SIZE = 4 * 1024 * 1024; // 4MB
-
-        setError(null);
-
-        for (const file of files) {
+    useEffect(() => {
+        const fetchIssue = async () => {
             try {
-                if (file.type.startsWith('video')) {
-                    if (file.size > MAX_VIDEO_SIZE) {
-                        setError(isRTL
-                            ? `الفيديو ${file.name} كبير جداً. الحد الأقصى للفيديو هو 4 ميجابايت.`
-                            : `Video ${file.name} is too large. Max limit is 4MB.`);
-                        continue;
+                setLoading(true);
+                const response = await issueService.getIssueById(id);
+                if (response.success) {
+                    const issue = response.data;
+                    setTitle(issue.title);
+                    setDescription(issue.description);
+                    setCategory(issue.category_id);
+                    setLocationText(issue.location_text);
+                    if (issue.lat && issue.lng) {
+                        setSelectedPosition({ lat: issue.lat, lng: issue.lng });
                     }
-
-                    const previewUrl = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
-                        reader.readAsDataURL(file);
-                    });
-
-                    setImages(prev => [...prev, {
-                        file: file,
-                        url: previewUrl,
-                        type: 'video',
-                        name: file.name
-                    }]);
-                } else if (file.type.startsWith('image')) {
-                    let finalBlob;
-                    if (file.size > MAX_IMAGE_SIZE) {
-                        finalBlob = await compressImage(file);
-                    } else {
-                        finalBlob = file;
-                    }
-
-                    const previewUrl = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
-                        reader.readAsDataURL(finalBlob);
-                    });
-
-                    setImages(prev => [...prev, {
-                        file: finalBlob,
-                        url: previewUrl,
-                        type: 'image',
-                        name: file.name
-                    }]);
+                    const media = [];
+                    if (issue.image_url) media.push({ url: issue.image_url, type: 'image' });
+                    if (issue.video_url) media.push({ url: issue.video_url, type: 'video' });
+                    setImages(media);
                 }
             } catch (err) {
-                console.error("File processing error:", err);
-                setError(isRTL ? "فشل معالجة الملف." : "Failed to process file.");
+                console.error("Error fetching issue for edit:", err);
+                setError(isRTL ? "تعذر تحميل بيانات المشكلة" : "Could not load issue data");
+            } finally {
+                setLoading(false);
             }
-        }
+        };
+        fetchIssue();
+    }, [id, isRTL]);
+
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImages(prev => [...prev, {
+                    url: reader.result,
+                    type: file.type.startsWith('video') ? 'video' : 'image'
+                }]);
+            };
+            reader.readAsDataURL(file);
+        });
     };
 
     const removeImage = (index) => {
@@ -138,25 +88,9 @@ export default function ReportIssue() {
         }
 
         try {
-            setLoading(true);
+            setSubmitting(true);
             setError(null);
 
-            // 1. Upload media files first to get URLs
-            let uploadedImageUrls = [];
-            let uploadedVideoUrls = [];
-
-            for (const img of images) {
-                // Determine file object to upload
-                const fileToUpload = img.file instanceof Blob ? new File([img.file], img.name, { type: img.file.type }) : img.file;
-
-                const uploadResponse = await issueService.uploadMedia(fileToUpload);
-                if (uploadResponse.success) {
-                    if (img.type === 'image') uploadedImageUrls.push(uploadResponse.url);
-                    else uploadedVideoUrls.push(uploadResponse.url);
-                }
-            }
-
-            // 2. Prepare final issue data with URLs instead of base64
             const issueData = {
                 title,
                 description,
@@ -164,20 +98,19 @@ export default function ReportIssue() {
                 location_text: locationText,
                 lat: selectedPosition?.lat,
                 lng: selectedPosition?.lng,
-                image_url: uploadedImageUrls[0] || null,
-                video_url: uploadedVideoUrls[0] || null,
+                image_url: images.find(img => img.type === 'image')?.url || null,
+                video_url: images.find(img => img.type === 'video')?.url || null,
             };
 
-            const response = await issueService.createIssue(issueData);
+            const response = await issueService.updateIssue(id, issueData);
             if (response.success) {
-                navigate("/issues");
+                navigate(`/issues/${id}`);
             }
         } catch (err) {
-            console.error("Error creating issue:", err);
-            const msg = err.response?.data?.message || err.message;
-            setError(isRTL ? `حدث خطأ: ${msg}` : `Error: ${msg}`);
+            console.error("Error updating issue:", err);
+            setError(err.response?.data?.message || err.message || (isRTL ? "حدث خطأ أثناء تحديث البلاغ" : "Error updating the report"));
         } finally {
-            setLoading(false);
+            setSubmitting(false);
         }
     };
 
@@ -189,6 +122,14 @@ export default function ReportIssue() {
             transition: { duration: 0.5, ease: "easeOut" }
         }
     };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-red-600 border-t-transparent"></div>
+            </div>
+        );
+    }
 
     return (
         <LazyMotion features={domAnimation}>
@@ -202,12 +143,12 @@ export default function ReportIssue() {
                     {/* Page Header */}
                     <div className="mb-8">
                         <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-2">
-                            {isRTL ? "أبلغ عن مشكلة جديدة" : "Report a New Issue"}
+                            {isRTL ? "تعديل المنشور" : "Edit Issue Post"}
                         </h1>
                         <p className="text-gray-600 dark:text-gray-400 text-lg">
                             {isRTL
-                                ? "ساعدنا في تحسين لبنان من خلال الإبلاغ عن المشاكل العامة في منطقتك."
-                                : "Help us improve Lebanon by reporting public issues in your area."}
+                                ? "قم بتحديث تفاصيل البلاغ لضمان دقة المعلومات."
+                                : "Update the report details to ensure accurate information."}
                         </p>
                     </div>
 
@@ -294,7 +235,7 @@ export default function ReportIssue() {
                         {/* Section 2: Media */}
                         <div className="p-4 sm:p-6 md:p-8 space-y-4">
                             <label className="block text-sm font-bold text-gray-900 dark:text-white">
-                                {isRTL ? "الأدلة المرئية (اختياري)" : "Media Evidence (Optional)"}
+                                {isRTL ? "الأدلة المرئية (تعديل)" : "Media Evidence (Update)"}
                             </label>
                             <label className="flex justify-center rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700 px-6 py-10 hover:bg-gray-50 dark:hover:bg-gray-800/30 hover:border-red-400 transition-all cursor-pointer group relative">
                                 <input
@@ -359,57 +300,31 @@ export default function ReportIssue() {
 
                         {/* Section 4: Privacy & Submit */}
                         <div className="p-4 sm:p-6 md:p-8 bg-gray-50 dark:bg-gray-800/50 flex flex-col gap-6">
-                            <div className="flex items-center justify-between p-5 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-bold text-gray-900 dark:text-white">
-                                        {isRTL ? "النشر بهوية مجهولة" : "Post Anonymously"}
-                                    </span>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                                        {isRTL ? "سيتم إخفاء اسمك من التقرير العام." : "Your name will be hidden from the public report."}
-                                    </span>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsAnonymous(!isAnonymous)}
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${isAnonymous ? "bg-red-600" : "bg-gray-200 dark:bg-gray-700"}`}
-                                >
-                                    <span
-                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isAnonymous ? (isRTL ? "-translate-x-6" : "translate-x-6") : (isRTL ? "-translate-x-1" : "translate-x-1")}`}
-                                    />
-                                </button>
-                            </div>
-
                             <div className={`flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-4 ${isRTL ? "sm:flex-row-reverse" : ""}`}>
                                 <button
                                     type="button"
-                                    onClick={() => navigate("/issues")}
+                                    onClick={() => navigate(`/issues/${id}`)}
                                     className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium text-sm transition-colors py-2"
                                 >
                                     {isRTL ? "إلغاء" : "Cancel"}
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={loading}
-                                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-10 py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-base shadow-lg shadow-red-500/30 transition-all transform active:scale-95 disabled:opacity-50"
+                                    disabled={submitting}
+                                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-10 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-base shadow-lg shadow-emerald-500/30 transition-all transform active:scale-95 disabled:opacity-50"
                                 >
-                                    {loading ? (
+                                    {submitting ? (
                                         <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white"></div>
                                     ) : (
                                         <>
-                                            {isRTL ? "نشر المشكلة" : "Post Issue"}
-                                            <PaperPlaneIcon className={`h-5 w-5 ${isRTL ? "rotate-180" : ""}`} />
+                                            {isRTL ? "حفظ التغييرات" : "Save Changes"}
+                                            <UpdateIcon className={`h-5 w-5 ${isRTL ? "rotate-180" : ""}`} />
                                         </>
                                     )}
                                 </button>
                             </div>
                         </div>
                     </form>
-
-                    <p className="mt-8 text-center text-xs text-gray-500 dark:text-gray-600 max-w-md mx-auto">
-                        {isRTL
-                            ? <>من خلال تقديم هذه المشكلة، فإنك توافق على <a className="underline hover:text-red-600" href="#">شروط الخدمة</a> و <a className="underline hover:text-red-600" href="#">سياسة الخصوصية</a> الخاصة بنا.</>
-                            : <>By submitting this issue, you agree to our <a className="underline hover:text-red-600" href="#">Terms of Service</a> and <a className="underline hover:text-red-600" href="#">Privacy Policy</a>.</>}
-                    </p>
                 </div>
             </m.main>
         </LazyMotion>

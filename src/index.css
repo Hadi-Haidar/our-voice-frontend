@@ -27,6 +27,7 @@
         color: var(--text-main) !important;
         margin: 0;
         padding: 0;
+        scrollbar-gutter: stable;
     }
 
     body {

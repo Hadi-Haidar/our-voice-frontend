@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { ChevronDownIcon, CheckIcon } from "@radix-ui/react-icons";
+import { CategoryIcon } from "./CategoryIcon";
 
 export default function CustomSelect({ options, value, onChange, placeholder, isRTL, className }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -38,7 +39,7 @@ export default function CustomSelect({ options, value, onChange, placeholder, is
                     {selectedOption ? (
                         <>
                             {selectedOption.icon && (
-                                <selectedOption.icon className="h-4 w-4 shrink-0 text-red-500" />
+                                <CategoryIcon name={selectedOption.icon} className="h-4 w-4 shrink-0 text-red-500" />
                             )}
                             <span className="truncate text-sm font-medium">{selectedOption.label}</span>
                         </>
@@ -95,7 +96,7 @@ export default function CustomSelect({ options, value, onChange, placeholder, is
                                         `}
                                     >
                                         {option.icon ? (
-                                            <option.icon className={`h-5 w-5 sm:h-4 sm:w-4 shrink-0 ${value === option.value ? "text-red-600 dark:text-red-400" : "text-gray-400"}`} />
+                                            <CategoryIcon name={option.icon} className={`h-5 w-5 sm:h-4 sm:w-4 shrink-0 ${value === option.value ? "text-red-600 dark:text-red-400" : "text-gray-400"}`} />
                                         ) : (
                                             <div className="h-5 w-5 sm:h-4 sm:w-4 shrink-0" />
                                         )}
