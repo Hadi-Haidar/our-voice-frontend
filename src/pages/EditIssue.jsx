@@ -12,7 +12,7 @@ import {
     Cross2Icon,
     PaperPlaneIcon,
     ExclamationTriangleIcon,
-    UpdateIcon
+    CheckIcon
 } from "@radix-ui/react-icons";
 
 export default function EditIssue() {
@@ -61,18 +61,22 @@ export default function EditIssue() {
         fetchIssue();
     }, [id, isRTL]);
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         const files = Array.from(e.target.files);
-        files.forEach(file => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImages(prev => [...prev, {
-                    url: reader.result,
-                    type: file.type.startsWith('video') ? 'video' : 'image'
-                }]);
-            };
-            reader.readAsDataURL(file);
-        });
+        for (const file of files) {
+            const previewUrl = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(file);
+            });
+
+            setImages(prev => [...prev, {
+                file: file,
+                url: previewUrl,
+                type: file.type.startsWith('video') ? 'video' : 'image',
+                isNew: true
+            }]);
+        }
     };
 
     const removeImage = (index) => {
@@ -91,6 +95,25 @@ export default function EditIssue() {
             setSubmitting(true);
             setError(null);
 
+            // 1. Upload NEW media files first
+            let finalImageUrl = null;
+            let finalVideoUrl = null;
+
+            for (const img of images) {
+                if (img.isNew && img.file) {
+                    // Upload new file
+                    const uploadResponse = await issueService.uploadMedia(img.file);
+                    if (uploadResponse.success) {
+                        if (img.type === 'image') finalImageUrl = uploadResponse.url;
+                        else finalVideoUrl = uploadResponse.url;
+                    }
+                } else {
+                    // Keep existing URL
+                    if (img.type === 'image') finalImageUrl = img.url;
+                    else finalVideoUrl = img.url;
+                }
+            }
+
             const issueData = {
                 title,
                 description,
@@ -98,8 +121,8 @@ export default function EditIssue() {
                 location_text: locationText,
                 lat: selectedPosition?.lat,
                 lng: selectedPosition?.lng,
-                image_url: images.find(img => img.type === 'image')?.url || null,
-                video_url: images.find(img => img.type === 'video')?.url || null,
+                image_url: finalImageUrl,
+                video_url: finalVideoUrl,
             };
 
             const response = await issueService.updateIssue(id, issueData);
@@ -125,8 +148,8 @@ export default function EditIssue() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-red-600 border-t-transparent"></div>
+            <div className="flex-1 flex items-center justify-center p-8 min-h-[60vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
             </div>
         );
     }
@@ -311,14 +334,17 @@ export default function EditIssue() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-10 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-base shadow-lg shadow-emerald-500/30 transition-all transform active:scale-95 disabled:opacity-50"
+                                    className="w-full sm:w-auto relative group overflow-hidden px-10 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-bold text-base shadow-[0_10px_25px_-5px_rgba(16,185,129,0.4)] transition-all transform active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
+                                    {/* Subtle gloss effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    
                                     {submitting ? (
                                         <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white"></div>
                                     ) : (
                                         <>
-                                            {isRTL ? "حفظ التغييرات" : "Save Changes"}
-                                            <UpdateIcon className={`h-5 w-5 ${isRTL ? "rotate-180" : ""}`} />
+                                            <span>{isRTL ? "حفظ التغييرات" : "Save Changes"}</span>
+                                            <CheckIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
                                         </>
                                     )}
                                 </button>

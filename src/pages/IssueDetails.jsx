@@ -4,7 +4,6 @@ import { m, LazyMotion, domAnimation } from "framer-motion";
 import { useLanguage } from "../hooks/useLanguage";
 import { CATEGORIES } from "../data/categories";
 import { issueService } from "../services/issueService";
-import { getMockComments } from "../data/commentsMock";
 import {
     ArrowLeftIcon,
     ArrowRightIcon,
@@ -39,6 +38,11 @@ export default function IssueDetails() {
     const [commentText, setCommentText] = useState("");
     const [copied, setCopied] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [upvoting, setUpvoting] = useState(false);
+    const [submittingComment, setSubmittingComment] = useState(false);
+    const [activeDropdownId, setActiveDropdownId] = useState(null);
+    const [editingCommentId, setEditingCommentId] = useState(null);
+    const [editCommentText, setEditCommentText] = useState("");
     const confirm = useConfirm();
 
     const handleDelete = async () => {
@@ -112,8 +116,123 @@ export default function IssueDetails() {
     const statusLabel = (s, ar) => {
         if (s === "pending") return ar ? "قيد الانتظار" : "Pending";
         if (s === "in_progress") return ar ? "قيد المعالجة" : "In Progress";
-        if (s === "solved" || s === "resolved") return ar ? "تم الحل" : "Solved";
+        if (s === "solved") return ar ? "تم الحل" : "Solved";
         return s;
+    };
+
+    const handleUpvote = async () => {
+        if (!user) {
+            alert(isRTL ? "يرجى تسجيل الدخول للقيام بذلك" : "Please login to upvote");
+            return;
+        }
+
+        if (upvoting) return;
+
+        try {
+            setUpvoting(true);
+            const response = await issueService.toggleUpvote(id);
+            if (response.success) {
+                // Update local state
+                setIssue(prev => ({
+                    ...prev,
+                    has_upvoted: response.upvoted,
+                    upvotes_count: response.upvoted 
+                        ? (prev.upvotes_count + 1) 
+                        : (prev.upvotes_count - 1)
+                }));
+            }
+        } catch (err) {
+            console.error("Error toggling upvote:", err);
+        } finally {
+            setUpvoting(false);
+        }
+    };
+
+    const handleAddComment = async () => {
+        if (!user) {
+            alert(isRTL ? "يرجى تسجيل الدخول لإضافة تعليق" : "Please login to add a comment");
+            return;
+        }
+
+        if (!commentText.trim() || submittingComment) return;
+
+        try {
+            setSubmittingComment(true);
+            const response = await issueService.addComment(id, commentText);
+            
+            if (response.success) {
+                // Add the new comment to the local state
+                setIssue(prev => ({
+                    ...prev,
+                    comments: [response.data, ...(prev.comments || [])],
+                    comments_count: (prev.comments_count || 0) + 1
+                }));
+                setCommentText(""); // Clear input
+            } else {
+                alert((isRTL ? "فشل إضافة التعليق: " : "Failed to add comment: ") + response.message);
+            }
+        } catch (err) {
+            console.error("Error adding comment:", err);
+            const errMsg = err.response?.data?.message || err.message;
+            alert((isRTL ? "فشل إضافة التعليق: " : "Failed to add comment: ") + errMsg);
+        } finally {
+            setSubmittingComment(false);
+        }
+    };
+
+    const handleEditComment = (comment) => {
+        setEditingCommentId(comment.id);
+        setEditCommentText(comment.text);
+        setActiveDropdownId(null);
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editCommentText.trim()) return;
+        try {
+            const response = await issueService.updateComment(id, editingCommentId, editCommentText);
+            if (response.success) {
+                setIssue(prev => ({
+                    ...prev,
+                    comments: prev.comments.map(c => c.id === editingCommentId ? { ...c, text: editCommentText } : c)
+                }));
+                setEditingCommentId(null);
+            } else {
+                alert((isRTL ? "فشل تعديل التعليق: " : "Failed to edit comment: ") + response.message);
+            }
+        } catch (err) {
+            console.error("Error updating comment:", err);
+            const errMsg = err.response?.data?.message || err.message;
+            alert((isRTL ? "فشل تعديل التعليق: " : "Failed to edit comment: ") + errMsg);
+        }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        try {
+            const ok = await confirm({
+                title: isRTL ? "حذف التعليق" : "Delete Comment",
+                message: isRTL ? "هل أنت متأكد أنك تريد حذف هذا التعليق؟" : "Are you sure you want to delete this comment?",
+                confirmText: isRTL ? "حذف" : "Delete"
+            });
+
+            if (ok) {
+                const response = await issueService.deleteComment(id, commentId);
+                if (response.success) {
+                    setIssue(prev => ({
+                        ...prev,
+                        comments: prev.comments.filter(c => c.id !== commentId),
+                        comments_count: Math.max(0, (prev.comments_count || 0) - 1)
+                    }));
+                } else {
+                    alert((isRTL ? "فشل حذف التعليق: " : "Failed to delete comment: ") + response.message);
+                }
+            }
+        } catch (err) {
+            console.error("Error deleting comment:", err);
+            const errMsg = err.response?.data?.message || err.message;
+            alert((isRTL ? "فشل حذف التعليق: " : "Failed to delete comment: ") + errMsg);
+        } finally {
+            setActiveDropdownId(null);
+        }
     };
 
     const handleShare = async () => {
@@ -177,10 +296,7 @@ export default function IssueDetails() {
         );
     }
 
-    // Fallback if comments are missing from backend
-    const commentsToShow = issue.comments && issue.comments.length > 0
-        ? issue.comments
-        : getMockComments(isRTL);
+    const commentsToShow = issue.comments || [];
 
     return (
         <LazyMotion features={domAnimation}>
@@ -206,11 +322,11 @@ export default function IssueDetails() {
                             <span className="bg-red-50 text-red-700 dark:bg-red-900/40 dark:text-red-300 text-xs font-semibold px-3 py-1 rounded-full border border-red-100 dark:border-red-800/50">
                                 {getCategoryLabel(issue.category_id)}
                             </span>
-                            <div className={`text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm shadow-black/5 ${(issue.status === 'solved' || issue.status === 'resolved') ? 'bg-emerald-500 text-white shadow-emerald-500/20' :
+                            <div className={`text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm shadow-black/5 ${issue.status === 'solved' ? 'bg-emerald-500 text-white shadow-emerald-500/20' :
                                 issue.status === 'in_progress' ? 'bg-blue-500 text-white shadow-blue-500/20' :
                                     'bg-orange-500 text-white shadow-orange-500/20'
                                 }`}>
-                                {(issue.status === 'solved' || issue.status === 'resolved') && <CheckCircledIcon className="h-4 w-4" />}
+                                {issue.status === 'solved' && <CheckCircledIcon className="h-4 w-4" />}
                                 {statusLabel(issue.status, isRTL)}
                             </div>
 
@@ -271,7 +387,7 @@ export default function IssueDetails() {
                             {issue.image_url && (
                                 <img
                                     alt={issue.title}
-                                    className={`w-full h-full object-cover ${(issue.status === "solved" || issue.status === "resolved") ? "grayscale opacity-80" : ""}`}
+                                    className={`w-full h-full object-cover ${(issue.status === "solved") ? "grayscale opacity-80" : ""}`}
                                     src={issue.image_url}
                                 />
                             )}
@@ -311,9 +427,17 @@ export default function IssueDetails() {
                         </div>
 
                         <div className="flex gap-4">
-                            <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-red-400 hover:text-red-600 transition-colors shadow-sm text-gray-700 dark:text-gray-300">
+                            <button 
+                                onClick={handleUpvote}
+                                disabled={upvoting}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all shadow-sm font-bold ${
+                                    issue.has_upvoted 
+                                    ? "bg-red-600 border-red-600 text-white shadow-red-500/20" 
+                                    : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-red-400 hover:text-red-600 text-gray-700 dark:text-gray-300"
+                                } active:scale-95 disabled:opacity-50`}
+                            >
                                 <ArrowUpIcon className="h-4 w-4" />
-                                <span className="font-bold">{issue.upvotes_count || 0}</span>
+                                <span>{issue.upvotes_count || 0}</span>
                             </button>
                             <button
                                 onClick={handleShare}
@@ -358,11 +482,16 @@ export default function IssueDetails() {
                                     onChange={(e) => setCommentText(e.target.value)}
                                 />
                                 <button
-                                    className={`absolute bottom-3 mb-1 p-2 rounded-xl transition-all shadow-md ${commentText.trim() ? "bg-red-600 hover:bg-red-700 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"}`}
+                                    onClick={handleAddComment}
+                                    className={`absolute bottom-3 mb-1 p-2 rounded-xl transition-all shadow-md ${commentText.trim() && !submittingComment ? "bg-red-600 hover:bg-red-700 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"}`}
                                     style={{ [isRTL ? 'left' : 'right']: '12px' }}
-                                    disabled={!commentText.trim()}
+                                    disabled={!commentText.trim() || submittingComment}
                                 >
-                                    <PaperPlaneIcon className={`h-4 w-4 ${isRTL ? "rotate-180" : ""}`} />
+                                    {submittingComment ? (
+                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white"></div>
+                                    ) : (
+                                        <PaperPlaneIcon className={`h-4 w-4 ${isRTL ? "rotate-180" : ""}`} />
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -385,17 +514,45 @@ export default function IssueDetails() {
                                                     <span className="font-bold text-gray-900 dark:text-white text-sm">{comment.author?.full_name || (isRTL ? "مستخدم" : "User")}</span>
                                                     <span className="text-xs text-gray-400">{formatTime(comment.created_at || new Date(), isRTL)}</span>
                                                 </div>
-                                                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                                                    {comment.text}
-                                                </p>
+                                                {editingCommentId === comment.id ? (
+                                                    <div className="mt-2 flex flex-col gap-2">
+                                                        <textarea 
+                                                            value={editCommentText}
+                                                            onChange={(e) => setEditCommentText(e.target.value)}
+                                                            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-2 px-3 focus:border-red-400 resize-none text-sm text-gray-900 dark:text-white outline-none"
+                                                            rows="2"
+                                                        />
+                                                        <div className="flex justify-end gap-2 text-xs font-bold mt-1">
+                                                            <button onClick={() => setEditingCommentId(null)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">{isRTL ? "إلغاء" : "Cancel"}</button>
+                                                            <button onClick={handleSaveEdit} className="text-white bg-red-600 px-3 py-1.5 rounded-lg hover:bg-red-700">{isRTL ? "حفظ" : "Save"}</button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">
+                                                        {comment.text}
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="flex items-center gap-4 text-xs font-medium text-gray-500 mt-2 ml-2 mr-2">
                                                 <button className="hover:text-red-600 transition-colors">{isRTL ? "رد" : "Reply"}</button>
                                             </div>
                                         </div>
-                                        <button className="self-start text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mt-2">
-                                            <DotsHorizontalIcon className="h-4 w-4" />
-                                        </button>
+                                        {user?.id === comment.author?.id && (
+                                            <div className="relative">
+                                                <button 
+                                                    onClick={() => setActiveDropdownId(activeDropdownId === comment.id ? null : comment.id)}
+                                                    className="self-start text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mt-2 p-1"
+                                                >
+                                                    <DotsHorizontalIcon className="h-4 w-4" />
+                                                </button>
+                                                {activeDropdownId === comment.id && (
+                                                    <div className={`absolute top-8 ${isRTL ? 'left-0' : 'right-0'} bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-xl z-20 py-1 flex flex-col overflow-hidden w-28`}>
+                                                        <button onClick={() => handleEditComment(comment)} className="px-4 py-2 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-start flex gap-2 items-center"><Pencil1Icon className="h-3 w-3"/>{isRTL ? "تعديل" : "Edit"}</button>
+                                                        <button onClick={() => handleDeleteComment(comment.id)} className="px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-start flex gap-2 items-center"><TrashIcon className="h-3 w-3"/>{isRTL ? "حذف" : "Delete"}</button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                     {i < commentsToShow.length - 1 && <hr className="border-gray-100 dark:border-gray-800 mt-6" />}
                                 </div>

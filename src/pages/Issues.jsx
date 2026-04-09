@@ -19,6 +19,7 @@ import {
   PersonIcon,
 } from "@radix-ui/react-icons";
 import { CategoryIcon } from "../components/CategoryIcon";
+import { useAuth } from "../contexts/AuthContext";
 
 const STATUS_OPTIONS = ["all", "pending", "in_progress", "solved"];
 
@@ -28,6 +29,8 @@ export default function Issues() {
 
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [upvotingIds, setUpvotingIds] = useState([]);
+  const { user } = useAuth();
   const [error, setError] = useState(null);
   const [activeCategories, setActiveCategories] = useState([]);
   const [activeStatus, setActiveStatus] = useState("all");
@@ -116,6 +119,38 @@ export default function Issues() {
     if (hours > 0) return ar ? `منذ ${hours} ساعة` : `${hours}h ago`;
     if (minutes > 0) return ar ? `منذ ${minutes} دقيقة` : `${minutes}m ago`;
     return ar ? "الآن" : "Just now";
+  };
+
+  const handleUpvote = async (id, e) => {
+    e.stopPropagation(); // Don't navigate to details
+
+    if (!user) {
+      alert(isRTL ? "يرجى تسجيل الدخول للقيام بذلك" : "Please login to upvote");
+      return;
+    }
+
+    if (upvotingIds.includes(id)) return;
+
+    try {
+      setUpvotingIds(prev => [...prev, id]);
+      const response = await issueService.toggleUpvote(id);
+      if (response.success) {
+        setIssues(prevIssues => prevIssues.map(issue => {
+          if (issue.id === id) {
+            return {
+              ...issue,
+              has_upvoted: response.upvoted,
+              upvotes: response.upvoted ? (issue.upvotes + 1) : (issue.upvotes - 1)
+            };
+          }
+          return issue;
+        }));
+      }
+    } catch (err) {
+      console.error("Error toggling upvote:", err);
+    } finally {
+      setUpvotingIds(prev => prev.filter(uid => uid !== id));
+    }
   };
 
   return (
@@ -324,19 +359,19 @@ export default function Issues() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.35, delay: index * 0.06 }}
-                  className={`bg-white dark:bg-gray-900 rounded-2xl shadow-sm hover:shadow-lg border transition-shadow flex flex-col h-full group cursor-pointer ${issue.status === "resolved"
+                  className={`bg-white dark:bg-gray-900 rounded-2xl shadow-sm hover:shadow-lg border transition-shadow flex flex-col h-full group cursor-pointer ${issue.status === "solved"
                     ? "border-emerald-200 dark:border-emerald-800/40 relative"
                     : "border-gray-200 dark:border-gray-800"
                     }`}
                 >
                   {/* Resolved ribbon */}
-                  {issue.status === "resolved" && (
+                  {issue.status === "solved" && (
                     <div
                       className={`absolute top-0 ${isRTL ? "left-0 rounded-br-xl" : "right-0 rounded-bl-xl"
                         } bg-emerald-500 text-white text-xs font-bold px-3 py-1 z-30 flex items-center gap-1`}
                     >
                       <CheckCircledIcon className="h-3.5 w-3.5" />
-                      {isRTL ? "تم الحل" : "Resolved"}
+                      {isRTL ? "تم الحل" : "Solved"}
                     </div>
                   )}
 
@@ -397,10 +432,15 @@ export default function Issues() {
                     <div className="border-t border-gray-100 dark:border-gray-800 pt-3 flex justify-between items-center">
                       <div className="flex gap-3">
                         <button
-                          className={`flex items-center gap-1.5 text-sm transition-colors ${issue.status === "resolved"
-                            ? "text-emerald-500 dark:text-emerald-400 cursor-default"
-                            : "text-gray-400 hover:text-red-600"
-                            }`}
+                          onClick={(e) => handleUpvote(issue.id, e)}
+                          disabled={upvotingIds.includes(issue.id)}
+                          className={`flex items-center gap-1.5 text-sm transition-all active:scale-95 disabled:opacity-50 ${
+                            issue.has_upvoted
+                              ? "text-red-600 font-bold"
+                              : issue.status === "solved"
+                                ? "text-emerald-500/60 dark:text-emerald-400/60 cursor-default"
+                                : "text-gray-400 hover:text-red-600"
+                          }`}
                         >
                           <ArrowUpIcon className="h-4 w-4" />
                           <span className="font-medium">{issue.upvotes}</span>

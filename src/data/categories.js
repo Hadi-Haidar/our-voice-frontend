@@ -28,6 +28,6 @@ export const CATEGORIES = [
     { id: 9, labelAr: "أمن وسلامة", labelEn: "Public Safety", iconStr: "LockClosedIcon" },
     { id: 10, labelAr: "مجتمع", labelEn: "Community", iconStr: "PersonIcon" },
     { id: 11, labelAr: "اتصالات", labelEn: "Telecom", iconStr: "MobileIcon" },
-    { id: 12, labelAr: "حيوانات ضالة", labelEn: "Stray Animals", iconStr: "HeartIcon" },
-    { id: 13, labelAr: "نقل عام", labelEn: "Public Transport", iconStr: "TimerIcon" },
+    { id: 12, labelAr: "حيوانات ضالة", labelEn: "Stray Animals", iconStr: "HandIcon" },
+    { id: 13, labelAr: "نقل عام", labelEn: "Public Transport", iconStr: "UpdateIcon" },
 ];

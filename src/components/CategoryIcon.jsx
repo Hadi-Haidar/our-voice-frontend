@@ -15,8 +15,8 @@ export const ICON_MAP = {
     "LockClosedIcon": Icons.LockClosedIcon,
     "PersonIcon": Icons.PersonIcon,
     "MobileIcon": Icons.MobileIcon,
-    "HeartIcon": Icons.HeartIcon,
-    "TimerIcon": Icons.TimerIcon,
+    "HandIcon": Icons.HandIcon,
+    "UpdateIcon": Icons.UpdateIcon,
 };
 
 /**

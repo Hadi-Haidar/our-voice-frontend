@@ -57,6 +57,28 @@ export const issueService = {
         }
     },
 
+    // Update an existing comment
+    updateComment: async (issueId, commentId, text) => {
+        try {
+            const response = await apiClient.patch(`/issues/${issueId}/comments/${commentId}`, { text });
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating comment ${commentId}:`, error);
+            throw error;
+        }
+    },
+
+    // Delete a comment
+    deleteComment: async (issueId, commentId) => {
+        try {
+            const response = await apiClient.delete(`/issues/${issueId}/comments/${commentId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error deleting comment ${commentId}:`, error);
+            throw error;
+        }
+    },
+
     // Update an existing issue
     updateIssue: async (id, issueData) => {
         try {
