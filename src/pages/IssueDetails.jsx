@@ -22,9 +22,11 @@ import {
     Pencil1Icon,
     TrashIcon
 } from "@radix-ui/react-icons";
+import { Helmet } from "react-helmet-async";
 import IssueMap from "../components/IssueMap";
 import { useAuth } from "../contexts/AuthContext";
 import { useConfirm } from "../hooks/useConfirm";
+
 
 export default function IssueDetails() {
     const { id } = useParams();
@@ -300,7 +302,30 @@ export default function IssueDetails() {
 
     return (
         <LazyMotion features={domAnimation}>
+            <Helmet>
+                <title>{issue ? `${issue.title} | Our Voice` : "Issue Details | Our Voice"}</title>
+                <meta name="description" content={issue ? issue.description.substring(0, 160) : "View issue details on Our Voice"} />
+                
+                {issue && (
+                    <>
+                        {/* Open Graph / Facebook */}
+                        <meta property="og:type" content="website" />
+                        <meta property="og:url" content={window.location.href} />
+                        <meta property="og:title" content={issue.title} />
+                        <meta property="og:description" content={issue.description.substring(0, 160)} />
+                        {issue.image_url && <meta property="og:image" content={issue.image_url} />}
+
+                        {/* Twitter */}
+                        <meta property="twitter:card" content="summary_large_image" />
+                        <meta property="twitter:url" content={window.location.href} />
+                        <meta property="twitter:title" content={issue.title} />
+                        <meta property="twitter:description" content={issue.description.substring(0, 160)} />
+                        {issue.image_url && <meta property="twitter:image" content={issue.image_url} />}
+                    </>
+                )}
+            </Helmet>
             <m.div
+
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
