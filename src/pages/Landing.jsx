@@ -7,7 +7,7 @@ import CTASection from "../components/landing/CTASection";
 
 export default function Landing() {
   return (
-    <div className="space-y-32 py-16">
+    <div className="space-y-24">
       <HeroSection />
       <ProblemsSection />
       <HowItWorksSection />
