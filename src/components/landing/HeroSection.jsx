@@ -1,6 +1,6 @@
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Link } from "react-router-dom";
-import heroImage from "../../assets/hero.webp";
+import heroImage from "../../assets/lebanon_hero.png";
 import { CheckIcon } from "@radix-ui/react-icons";
 import { useLanguage } from "../../hooks/useLanguage";
 
@@ -15,24 +15,30 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="space-y-6"
+          className="space-y-6 md:space-y-7"
         >
-          <p className="inline-flex w-fit items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-3 py-1 text-xs text-gray-600 dark:text-gray-400">
+          <p className="inline-flex w-fit items-center gap-2 rounded-full border border-gray-200/70 dark:border-gray-800 bg-white/80 dark:bg-gray-900/70 px-3 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 backdrop-blur">
             {t("hero.badge")}
           </p>
 
-          <h1 className="text-4xl font-bold leading-tight sm:text-5xl text-gray-900 dark:text-white">
+          <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl text-gray-900 dark:text-white">
             {t("hero.title")}
           </h1>
 
-          <p className="text-lg text-gray-600 dark:text-gray-400">
+          <p className="max-w-xl text-base leading-relaxed sm:text-lg text-gray-600 dark:text-gray-400">
             {t("hero.subtitle")}
           </p>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              to="/report-issue"
+              className="inline-flex items-center justify-center rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-950"
+            >
+              {t("hero.reportIssue")}
+            </Link>
             <Link
               to="/issues"
-              className="rounded-xl bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 shadow"
+              className="inline-flex items-center justify-center rounded-xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/60 px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white transition hover:bg-white dark:hover:bg-gray-900 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/20 dark:focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-950"
             >
               {t("hero.browseIssues")}
             </Link>
@@ -61,15 +67,17 @@ export default function HeroSection() {
         >
           <div className="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-br from-red-100 dark:from-red-900/20 to-transparent blur-2xl" />
 
-          <m.img
-            src={heroImage}
-            alt={t("hero.imageAlt")}
-            width={900}
-            height={700}
-            fetchpriority="high"
-            loading="eager"
-            className="mx-auto w-full max-w-lg rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 object-contain shadow-sm"
-          />
+          <div className="mx-auto w-full max-w-xl overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
+            <m.img
+              src={heroImage}
+              alt={t("hero.imageAlt")}
+              width={1200}
+              height={900}
+              fetchpriority="high"
+              loading="eager"
+              className="h-full w-full aspect-[4/3] object-cover"
+            />
+          </div>
         </m.div>
       </section>
     </LazyMotion>

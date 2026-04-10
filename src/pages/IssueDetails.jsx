@@ -138,8 +138,8 @@ export default function IssueDetails() {
                 setIssue(prev => ({
                     ...prev,
                     has_upvoted: response.upvoted,
-                    upvotes_count: response.upvoted 
-                        ? (prev.upvotes_count + 1) 
+                    upvotes_count: response.upvoted
+                        ? (prev.upvotes_count + 1)
                         : (prev.upvotes_count - 1)
                 }));
             }
@@ -161,7 +161,7 @@ export default function IssueDetails() {
         try {
             setSubmittingComment(true);
             const response = await issueService.addComment(id, commentText);
-            
+
             if (response.success) {
                 // Add the new comment to the local state
                 setIssue(prev => ({
@@ -305,7 +305,7 @@ export default function IssueDetails() {
             <Helmet>
                 <title>{issue ? `${issue.title} | Our Voice` : "Issue Details | Our Voice"}</title>
                 <meta name="description" content={issue ? issue.description.substring(0, 160) : "View issue details on Our Voice"} />
-                
+
                 {issue && (
                     <>
                         {/* Open Graph / Facebook */}
@@ -343,43 +343,45 @@ export default function IssueDetails() {
                 <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden mb-8">
                     {/* Header & Status */}
                     <div className="p-4 sm:p-6 md:p-8 pb-4">
-                        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                            <span className="bg-red-50 text-red-700 dark:bg-red-900/40 dark:text-red-300 text-xs font-semibold px-3 py-1 rounded-full border border-red-100 dark:border-red-800/50">
-                                {getCategoryLabel(issue.category_id)}
-                            </span>
-                            <div className={`text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm shadow-black/5 ${issue.status === 'solved' ? 'bg-emerald-500 text-white shadow-emerald-500/20' :
-                                issue.status === 'in_progress' ? 'bg-blue-500 text-white shadow-blue-500/20' :
-                                    'bg-orange-500 text-white shadow-orange-500/20'
-                                }`}>
-                                {issue.status === 'solved' && <CheckCircledIcon className="h-4 w-4" />}
-                                {statusLabel(issue.status, isRTL)}
+                        <div className="flex flex-wrap items-center gap-3 w-full mb-4">
+                            {/* Badges Group */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <span className="bg-red-50 text-red-700 dark:bg-red-900/40 dark:text-red-300 text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-full border border-red-100 dark:border-red-800/50 block">
+                                    {getCategoryLabel(issue.category_id)}
+                                </span>
+                                <div className={`text-[11px] sm:text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm shadow-black/5 ${issue.status === 'solved' ? 'bg-emerald-500 text-white shadow-emerald-500/20' :
+                                    issue.status === 'in_progress' ? 'bg-blue-500 text-white shadow-blue-500/20' :
+                                        'bg-orange-500 text-white shadow-orange-500/20'
+                                    }`}>
+                                    {issue.status === 'solved' && <CheckCircledIcon className="h-3.5 w-3.5" />}
+                                    {statusLabel(issue.status, isRTL)}
+                                </div>
                             </div>
 
-                            {/* Edit Button for Author */}
+                            {/* Action Buttons Group */}
                             {user?.id === issue.author_id && (
-                                <button
-                                    onClick={() => navigate(`/issues/${id}/edit`)}
-                                    className="ms-auto flex items-center gap-1.5 px-4 py-2 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-bold rounded-xl transition-all border border-gray-100 dark:border-gray-700 active:scale-95"
-                                >
-                                    <Pencil1Icon className="h-4 w-4 text-red-600" />
-                                    {isRTL ? "تعديل المنشور" : "Edit Post"}
-                                </button>
-                            )}
+                                <div className="flex items-center gap-2 ms-auto shrink-0">
+                                    <button
+                                        onClick={() => navigate(`/issues/${id}/edit`)}
+                                        className="flex items-center justify-center gap-1 px-3 py-1.5 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-[11px] sm:text-xs font-bold rounded-lg transition-all border border-gray-100 dark:border-gray-700 active:scale-95"
+                                    >
+                                        <Pencil1Icon className="h-3.5 w-3.5 text-gray-600 dark:text-gray-400" />
+                                        <span>{isRTL ? "تعديل" : "Edit"}</span>
+                                    </button>
 
-                            {/* Delete Button for Author */}
-                            {user?.id === issue.author_id && (
-                                <button
-                                    onClick={handleDelete}
-                                    disabled={deleting}
-                                    className="flex items-center gap-1.5 px-4 py-2 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-bold rounded-xl transition-all border border-red-100 dark:border-red-900/30 active:scale-95 disabled:opacity-50"
-                                >
-                                    {deleting ? (
-                                        <div className="animate-spin rounded-full h-3 w-3 border-2 border-red-600/30 border-t-red-600"></div>
-                                    ) : (
-                                        <TrashIcon className="h-4 w-4" />
-                                    )}
-                                    {isRTL ? "حذف" : "Delete"}
-                                </button>
+                                    <button
+                                        onClick={handleDelete}
+                                        disabled={deleting}
+                                        className="flex items-center justify-center gap-1 px-3 py-1.5 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 text-[11px] sm:text-xs font-bold rounded-lg transition-all border border-red-100 dark:border-red-900/30 active:scale-95 disabled:opacity-50"
+                                    >
+                                        {deleting ? (
+                                            <div className="animate-spin rounded-full h-3 w-3 border-2 border-red-600/30 border-t-red-600"></div>
+                                        ) : (
+                                            <TrashIcon className="h-3.5 w-3.5" />
+                                        )}
+                                        <span className="hidden sm:inline">{isRTL ? "حذف" : "Delete"}</span>
+                                    </button>
+                                </div>
                             )}
                         </div>
 
@@ -452,14 +454,13 @@ export default function IssueDetails() {
                         </div>
 
                         <div className="flex gap-4">
-                            <button 
+                            <button
                                 onClick={handleUpvote}
                                 disabled={upvoting}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all shadow-sm font-bold ${
-                                    issue.has_upvoted 
-                                    ? "bg-red-600 border-red-600 text-white shadow-red-500/20" 
-                                    : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-red-400 hover:text-red-600 text-gray-700 dark:text-gray-300"
-                                } active:scale-95 disabled:opacity-50`}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all shadow-sm font-bold ${issue.has_upvoted
+                                        ? "bg-red-600 border-red-600 text-white shadow-red-500/20"
+                                        : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-red-400 hover:text-red-600 text-gray-700 dark:text-gray-300"
+                                    } active:scale-95 disabled:opacity-50`}
                             >
                                 <ArrowUpIcon className="h-4 w-4" />
                                 <span>{issue.upvotes_count || 0}</span>
@@ -541,7 +542,7 @@ export default function IssueDetails() {
                                                 </div>
                                                 {editingCommentId === comment.id ? (
                                                     <div className="mt-2 flex flex-col gap-2">
-                                                        <textarea 
+                                                        <textarea
                                                             value={editCommentText}
                                                             onChange={(e) => setEditCommentText(e.target.value)}
                                                             className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-2 px-3 focus:border-red-400 resize-none text-sm text-gray-900 dark:text-white outline-none"
@@ -564,7 +565,7 @@ export default function IssueDetails() {
                                         </div>
                                         {user?.id === comment.author?.id && (
                                             <div className="relative">
-                                                <button 
+                                                <button
                                                     onClick={() => setActiveDropdownId(activeDropdownId === comment.id ? null : comment.id)}
                                                     className="self-start text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mt-2 p-1"
                                                 >
@@ -572,8 +573,8 @@ export default function IssueDetails() {
                                                 </button>
                                                 {activeDropdownId === comment.id && (
                                                     <div className={`absolute top-8 ${isRTL ? 'left-0' : 'right-0'} bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-xl z-20 py-1 flex flex-col overflow-hidden w-28`}>
-                                                        <button onClick={() => handleEditComment(comment)} className="px-4 py-2 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-start flex gap-2 items-center"><Pencil1Icon className="h-3 w-3"/>{isRTL ? "تعديل" : "Edit"}</button>
-                                                        <button onClick={() => handleDeleteComment(comment.id)} className="px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-start flex gap-2 items-center"><TrashIcon className="h-3 w-3"/>{isRTL ? "حذف" : "Delete"}</button>
+                                                        <button onClick={() => handleEditComment(comment)} className="px-4 py-2 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-start flex gap-2 items-center"><Pencil1Icon className="h-3 w-3" />{isRTL ? "تعديل" : "Edit"}</button>
+                                                        <button onClick={() => handleDeleteComment(comment.id)} className="px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-start flex gap-2 items-center"><TrashIcon className="h-3 w-3" />{isRTL ? "حذف" : "Delete"}</button>
                                                     </div>
                                                 )}
                                             </div>

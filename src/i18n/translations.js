@@ -35,6 +35,7 @@ const translations = {
             subtitle:
                 "Report local issues, support each other with votes and comments, and track progress transparently.",
             browseIssues: "Browse Issues",
+            reportIssue: "Report an Issue",
             submitIssue: "Submit an Issue",
             fastSubmit: "Fast to submit",
             transparentVotes: "Transparent votes",
@@ -267,6 +268,7 @@ const translations = {
             subtitle:
                 "أبلغ عن المشاكل المحلية، ادعم الآخرين بالتصويت والتعليقات، وتابع التقدم بشفافية.",
             browseIssues: "تصفح المشاكل",
+            reportIssue: "أبلغ عن مشكلة",
             submitIssue: "أرسل مشكلة",
             fastSubmit: "إرسال سريع",
             transparentVotes: "تصويت شفاف",

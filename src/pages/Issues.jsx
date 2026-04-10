@@ -434,13 +434,12 @@ export default function Issues() {
                         <button
                           onClick={(e) => handleUpvote(issue.id, e)}
                           disabled={upvotingIds.includes(issue.id)}
-                          className={`flex items-center gap-1.5 text-sm transition-all active:scale-95 disabled:opacity-50 ${
-                            issue.has_upvoted
+                          className={`flex items-center gap-1.5 text-sm transition-all active:scale-95 disabled:opacity-50 ${issue.has_upvoted
                               ? "text-red-600 font-bold"
                               : issue.status === "solved"
                                 ? "text-emerald-500/60 dark:text-emerald-400/60 cursor-default"
                                 : "text-gray-400 hover:text-red-600"
-                          }`}
+                            }`}
                         >
                           <ArrowUpIcon className="h-4 w-4" />
                           <span className="font-medium">{issue.upvotes}</span>
