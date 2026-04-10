@@ -528,7 +528,7 @@ export default function Issues() {
                       <button
                         key={s}
                         onClick={() => setActiveStatus(s)}
-                        className={`flex items-center justify-between px-4 py-3 rounded-xl border text-sm font-medium transition-all ${activeStatus === s
+                        className={`flex items-center justify-between px-4 py-2 rounded-xl border text-sm font-medium transition-all ${activeStatus === s
                           ? s === "solved"
                             ? "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400"
                             : s === "in_progress"
@@ -556,7 +556,7 @@ export default function Issues() {
                       <button
                         key={s}
                         onClick={() => setSortBy(s)}
-                        className={`flex items-center justify-between px-4 py-3 rounded-xl border text-sm font-medium transition-all ${sortBy === s
+                        className={`flex items-center justify-between px-4 py-2 rounded-xl border text-sm font-medium transition-all ${sortBy === s
                           ? "bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-400"
                           : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-gray-400"
                           }`}
@@ -606,13 +606,13 @@ export default function Issues() {
                     setSortBy("newest");
                     setSearch("");
                   }}
-                  className="flex-1 py-3 rounded-xl border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex-1 py-2 rounded-xl border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   {isRTL ? "مسح الكل" : "Clear All"}
                 </button>
                 <button
                   onClick={() => setDrawerOpen(false)}
-                  className="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors shadow-md"
+                  className="flex-1 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors shadow-sm"
                 >
                   {isRTL ? "تطبيق" : "Apply"}
                 </button>

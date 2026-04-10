@@ -57,22 +57,14 @@ export default function LocationPicker({ selectedPosition, setSelectedPosition, 
                 .then((data) => {
                     if (data.address) {
                         const a = data.address;
-                        // Pick the most relevant parts
-                        const parts = [];
-
-                        // 1. Precise location (Road, House number, or building name)
-                        const street = a.road || a.pedestrian || a.suburb || a.neighbourhood || a.village || a.hamlet;
-                        if (street) parts.push(street);
-
-                        // 2. City or region
-                        const city = a.city || a.town || a.city_district || a.municipality;
-                        if (city && city !== street) parts.push(city);
-
-                        const addr = parts.join(", ") || data.display_name;
+                        // Pick only ONE primary name of the place
+                        const primaryName = a.village || a.town || a.city || a.suburb || a.neighbourhood || a.road || a.municipality || data.name;
+                        const addr = primaryName || (isRTL ? "موقع غير معروف" : "Unknown Location");
+                        
                         setAddress(addr);
                         if (onAddressSelect) onAddressSelect(addr);
                     } else {
-                        const addr = data.display_name || "";
+                        const addr = data.name || (isRTL ? "موقع غير معروف" : "Unknown Location");
                         setAddress(addr);
                         if (onAddressSelect) onAddressSelect(addr);
                     }
@@ -108,9 +100,10 @@ export default function LocationPicker({ selectedPosition, setSelectedPosition, 
                     const newPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                     setSelectedPosition(newPos);
                 },
-                () => {
+                (err) => {
                     alert(isRTL ? "تعذر تحديد موقعك." : "Could not determine your location.");
-                }
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
             );
         }
     };

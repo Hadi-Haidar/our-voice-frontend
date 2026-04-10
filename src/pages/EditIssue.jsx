@@ -334,7 +334,7 @@ export default function EditIssue() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="w-full sm:w-auto relative group overflow-hidden px-10 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-bold text-base shadow-[0_10px_25px_-5px_rgba(16,185,129,0.4)] transition-all transform active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="w-full sm:w-auto relative group overflow-hidden px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium text-sm shadow transition-all transform active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     {/* Subtle gloss effect */}
                                     <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
