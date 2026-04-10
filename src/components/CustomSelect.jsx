@@ -88,7 +88,7 @@ export default function CustomSelect({ options, value, onChange, placeholder, is
                                         role="option"
                                         aria-selected={value === option.value}
                                         onClick={() => handleSelect(option.value)}
-                                        className={`flex items-center gap-3 w-full text-left px-4 py-3.5 sm:px-3 sm:py-2.5 rounded-xl sm:rounded-lg transition-colors text-base sm:text-sm font-medium
+                                        className={`flex items-center gap-3 w-full text-left px-4 py-3.5 sm:px-3 sm:py-2.5 rounded-xl sm:rounded-xl transition-colors text-base sm:text-sm font-medium
                                             ${value === option.value
                                                 ? "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400"
                                                 : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-800"

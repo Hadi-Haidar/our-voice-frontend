@@ -119,7 +119,7 @@ export default function Login() {
                     ) : (
                         <form onSubmit={handlePasswordSubmit} className="space-y-6">
                             {error && (
-                                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900/50">
+                                <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900/50">
                                     <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
                                 </div>
                             )}

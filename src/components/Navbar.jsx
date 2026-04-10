@@ -7,7 +7,7 @@ import NotificationBadge from "./NotificationBadge";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 
 const base =
-  "block rounded-lg px-3 py-2 text-sm font-medium transition";
+  "block rounded-xl px-3 py-2 text-sm font-medium transition";
 const active = "bg-gray-100 text-gray-900";
 const inactive = "text-gray-600 hover:bg-gray-100";
 
@@ -38,7 +38,7 @@ export default function Navbar({ onMenuClick }) {
             {/* Hamburger menu - visible on mobile/tablet, hidden on desktop */}
             <button
               onClick={onMenuClick}
-              className="lg:hidden rounded-lg p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+              className="lg:hidden rounded-xl p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
               aria-label={t("nav.openMenu")}
             >
               <HamburgerMenuIcon className="h-5 w-5" />

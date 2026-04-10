@@ -1,25 +1,14 @@
 import { Link } from "react-router-dom";
-import bgImage from "../../assets/lebanon-bg.webp";
 import { useLanguage } from "../../hooks/useLanguage";
 
 export default function CTASection() {
   const { t } = useLanguage();
 
   return (
-    <section className="relative mt-24 overflow-hidden rounded-3xl">
-      {/* Background image */}
-      <img
-        src={bgImage}
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-cover grayscale"
-        width={1600}
-        height={900}
-        loading="lazy"
-      />
-
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/60" />
+    <section className="relative mt-24 overflow-hidden rounded-3xl bg-slate-900">
+      {/* Abstract dark aesthetic shape */}
+      <div className="absolute -inset-10 -z-10 rounded-[100px] bg-gradient-to-br from-slate-800 to-slate-900 opacity-60 blur-3xl transform rotate-12" />
+      <div className="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-slate-800 to-transparent opacity-50 block" />
 
       {/* Content */}
       <div className="relative mx-auto max-w-4xl px-6 py-20 text-white">
@@ -41,7 +30,7 @@ export default function CTASection() {
         <div className="mt-8 flex flex-wrap gap-4">
           <Link
             to="/issues"
-            className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-gray-900 transition hover:bg-gray-100"
+            className="rounded-xl bg-white px-6 py-3 text-sm font-medium text-gray-900 transition hover:bg-gray-100"
           >
             {t("cta.browseIssues")}
           </Link>

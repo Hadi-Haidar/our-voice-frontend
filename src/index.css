@@ -3,10 +3,10 @@
 
 /* Default Light Theme */
 :root {
-    --bg-main: #ffffff;
+    --bg-main: #F8F9FA;
     --text-main: #111827;
     --border-main: #e5e7eb;
-    --nav-bg: rgba(255, 255, 255, 0.95);
+    --nav-bg: rgba(248, 249, 250, 0.95);
     color-scheme: light;
 }
 

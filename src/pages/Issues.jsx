@@ -177,9 +177,9 @@ export default function Issues() {
           </div>
           <button
             onClick={() => navigate("/report-issue")}
-            className="bg-red-600 hover:bg-red-700 active:scale-95 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group shrink-0 w-full sm:w-auto"
+            className="bg-red-600 hover:bg-red-700 active:scale-95 text-white px-4 py-2 text-sm rounded-xl font-medium shadow hover:shadow-md transition-all flex items-center justify-center gap-2 group shrink-0 w-full sm:w-auto"
           >
-            <PlusIcon className="h-5 w-5 group-hover:rotate-90 transition-transform duration-200" />
+            <PlusIcon className="h-4 w-4 group-hover:rotate-90 transition-transform duration-200" />
             {isRTL ? "أرسل مشكلة" : "Report Issue"}
           </button>
         </div>
@@ -312,8 +312,8 @@ export default function Issues() {
                     <div className="h-4 w-20 bg-gray-100 dark:bg-gray-800 rounded-full animate-pulse" />
                     {/* Title skeleton */}
                     <div className="space-y-2">
-                      <div className="h-5 w-full bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
-                      <div className="h-5 w-2/3 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
+                      <div className="h-5 w-full bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />
+                      <div className="h-5 w-2/3 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />
                     </div>
                     {/* Description skeleton */}
                     <div className="space-y-2 pt-2">
@@ -510,7 +510,7 @@ export default function Issues() {
                 </div>
                 <button
                   onClick={() => setDrawerOpen(false)}
-                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-500"
+                  className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-500"
                 >
                   <Cross1Icon className="h-4 w-4" />
                 </button>

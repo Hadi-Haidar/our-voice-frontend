@@ -135,7 +135,7 @@ export default function Sidebar({ isOpen, onClose, expanded, onExpandedChange })
                 <div className="pt-3 border-t border-gray-200 dark:border-gray-800">
                     <button
                         onClick={toggleTheme}
-                        className="flex items-center justify-between w-full px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-300"
+                        className="flex items-center justify-between w-full px-3 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-300"
                     >
                         <div className="flex items-center gap-2">
                             {isDark ? (
@@ -180,7 +180,7 @@ export default function Sidebar({ isOpen, onClose, expanded, onExpandedChange })
                                     logout();
                                     onClose();
                                 }}
-                                className="flex items-center justify-center gap-2 w-full rounded-lg border border-red-300 dark:border-red-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 transition hover:bg-red-50 dark:hover:bg-red-900/20"
+                                className="flex items-center justify-center gap-2 w-full rounded-xl border border-red-300 dark:border-red-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 transition hover:bg-red-50 dark:hover:bg-red-900/20"
                             >
                                 <ExitIcon className="h-4 w-4" />
                                 {t("sidebar.logout") || "Logout"}
@@ -191,7 +191,7 @@ export default function Sidebar({ isOpen, onClose, expanded, onExpandedChange })
                             <Link
                                 to="/login"
                                 onClick={onClose}
-                                className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 transition hover:bg-gray-50 dark:hover:bg-gray-700"
+                                className="flex items-center justify-center gap-2 w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 transition hover:bg-gray-50 dark:hover:bg-gray-700"
                             >
                                 <PersonIcon className="h-4 w-4" />
                                 {t("sidebar.login")}
@@ -199,7 +199,7 @@ export default function Sidebar({ isOpen, onClose, expanded, onExpandedChange })
                             <Link
                                 to="/signup"
                                 onClick={onClose}
-                                className="flex items-center justify-center gap-2 w-full rounded-lg bg-gray-900 dark:bg-gray-100 px-4 py-2.5 text-sm font-medium text-white dark:text-gray-900 transition hover:bg-gray-800 dark:hover:bg-gray-200"
+                                className="flex items-center justify-center gap-2 w-full rounded-xl bg-gray-900 dark:bg-gray-100 px-4 py-2.5 text-sm font-medium text-white dark:text-gray-900 transition hover:bg-gray-800 dark:hover:bg-gray-200"
                             >
                                 {t("sidebar.signup")}
                             </Link>
