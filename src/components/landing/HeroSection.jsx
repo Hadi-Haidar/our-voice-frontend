@@ -32,7 +32,7 @@ export default function HeroSection() {
           <div className="flex flex-wrap gap-3">
             <Link
               to="/issues"
-              className="rounded-xl bg-red-600 px-6 py-3 text-sm font-medium text-white transition hover:bg-red-700 shadow-sm"
+              className="rounded-xl bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 shadow"
             >
               {t("hero.browseIssues")}
             </Link>
