@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { NavLink, Link } from "react-router-dom";
 import logo from "../assets/logo.webp";
 import { useLanguage } from "../hooks/useLanguage";
@@ -28,9 +29,30 @@ function AppNavLink({ to, children }) {
 export default function Navbar({ onMenuClick }) {
   const { t } = useLanguage();
   const { isAuthenticated, loading } = useAuth();
+  
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Hide if scrolling down and past 50px
+      if (currentScrollY > 50 && currentScrollY > lastScrollY) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm transition-colors duration-200">
+    <header className={`sticky top-0 z-30 border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm transition-all duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full md:translate-y-0'}`}>
       <div className="px-4 py-2">
         <div className="flex items-center justify-between">
           {/* Left side - Menu button (mobile) + Logo */}

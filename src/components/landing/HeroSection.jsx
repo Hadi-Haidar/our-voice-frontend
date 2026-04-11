@@ -69,7 +69,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.12, ease: "easeOut" }}
-          className="relative"
+          className="relative w-full min-w-0"
         >
           <div className="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-br from-red-100 dark:from-red-900/20 to-transparent blur-2xl" />
 
