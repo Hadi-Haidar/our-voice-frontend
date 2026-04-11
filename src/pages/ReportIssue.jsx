@@ -166,6 +166,7 @@ export default function ReportIssue() {
                 lng: selectedPosition?.lng,
                 image_url: uploadedImageUrls[0] || null,
                 video_url: uploadedVideoUrls[0] || null,
+                is_anonymous: isAnonymous,
             };
 
             const response = await issueService.createIssue(issueData);

@@ -6,6 +6,9 @@
 
 const translations = {
     en: {
+        common: {
+            anonymous: "Anonymous",
+        },
         // Navigation
         nav: {
             home: "Home",
@@ -239,6 +242,9 @@ const translations = {
     },
 
     ar: {
+        common: {
+            anonymous: "مجهول",
+        },
         // Navigation
         nav: {
             home: "الرئيسية",

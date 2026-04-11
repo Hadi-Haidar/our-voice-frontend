@@ -24,7 +24,7 @@ import { useAuth } from "../contexts/AuthContext";
 const STATUS_OPTIONS = ["all", "pending", "in_progress", "solved"];
 
 export default function Issues() {
-  const { isRTL } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const navigate = useNavigate();
 
   const [issues, setIssues] = useState([]);
@@ -459,7 +459,9 @@ export default function Issues() {
                         ) : (
                           <PersonIcon className="h-4 w-4" />
                         )}
-                        <span>{issue.author?.full_name || (isRTL ? "مستخدم" : "User")}</span>
+                        <span className="text-sm font-bold text-gray-900 dark:text-white">
+                          {issue.is_anonymous ? t("common.anonymous") : (issue.author?.full_name || (isRTL ? "مستخدم" : "User"))}
+                        </span>
                       </div>
                     </div>
                   </div>

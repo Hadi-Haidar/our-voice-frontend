@@ -31,7 +31,7 @@ import { useConfirm } from "../hooks/useConfirm";
 export default function IssueDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { isRTL } = useLanguage();
+    const { t, isRTL } = useLanguage();
     const { user } = useAuth();
 
     const [issue, setIssue] = useState(null);
@@ -449,7 +449,9 @@ export default function IssueDetails() {
                             )}
                             <div className="flex flex-col">
                                 <span className="text-xs text-gray-500">{isRTL ? "نشر بواسطة" : "Posted by"}</span>
-                                <span className="text-sm font-bold text-gray-900 dark:text-white">{issue.author?.full_name || (isRTL ? "مستخدم" : "User")}</span>
+                                <span className="text-sm font-bold text-gray-900 dark:text-white">
+                                    {issue.is_anonymous ? t("common.anonymous") : (issue.author?.full_name || (isRTL ? "مستخدم" : "User"))}
+                                </span>
                             </div>
                         </div>
 
