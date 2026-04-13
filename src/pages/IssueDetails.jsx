@@ -363,23 +363,23 @@ export default function IssueDetails() {
                                 <div className="flex items-center gap-2 ms-auto shrink-0">
                                     <button
                                         onClick={() => navigate(`/issues/${id}/edit`)}
-                                        className="flex items-center justify-center gap-1 px-3 py-1.5 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-[11px] sm:text-xs font-bold rounded-lg transition-all border border-gray-100 dark:border-gray-700 active:scale-95"
+                                        className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-[11px] sm:text-xs font-bold rounded-full transition-all border border-gray-100 dark:border-gray-700 active:scale-95"
                                     >
-                                        <Pencil1Icon className="h-3.5 w-3.5 text-gray-600 dark:text-gray-400" />
+                                        <Pencil1Icon className="h-3.5 w-3.5 text-gray-500" />
                                         <span>{isRTL ? "تعديل" : "Edit"}</span>
                                     </button>
 
                                     <button
                                         onClick={handleDelete}
                                         disabled={deleting}
-                                        className="flex items-center justify-center gap-1 px-3 py-1.5 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 text-[11px] sm:text-xs font-bold rounded-lg transition-all border border-red-100 dark:border-red-900/30 active:scale-95 disabled:opacity-50"
+                                        className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 text-[11px] sm:text-xs font-bold rounded-full transition-all border border-red-100 dark:border-red-900/30 active:scale-95 disabled:opacity-50"
                                     >
                                         {deleting ? (
                                             <div className="animate-spin rounded-full h-3 w-3 border-2 border-red-600/30 border-t-red-600"></div>
                                         ) : (
                                             <TrashIcon className="h-3.5 w-3.5" />
                                         )}
-                                        <span className="hidden sm:inline">{isRTL ? "حذف" : "Delete"}</span>
+                                        <span>{isRTL ? "حذف" : "Delete"}</span>
                                     </button>
                                 </div>
                             )}

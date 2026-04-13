@@ -177,7 +177,7 @@ export default function Issues() {
           </div>
           <button
             onClick={() => navigate("/report-issue")}
-            className="bg-red-600 hover:bg-red-700 active:scale-95 text-white px-4 py-2 text-sm rounded-xl font-medium shadow hover:shadow-md transition-all flex items-center justify-center gap-2 group shrink-0 w-full sm:w-auto"
+            className="bg-red-600 hover:bg-red-700 active:scale-95 text-white px-5 py-2.5 text-sm rounded-full font-bold shadow-lg shadow-red-500/20 transition-all flex items-center justify-center gap-2 group shrink-0 w-fit self-start md:self-auto"
           >
             <PlusIcon className="h-4 w-4 group-hover:rotate-90 transition-transform duration-200" />
             {isRTL ? "أرسل مشكلة" : "Report Issue"}
@@ -185,34 +185,32 @@ export default function Issues() {
         </div>
 
         {/* ── Search + Filter button row ───────────────────────────────────── */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="flex gap-2 mb-6">
           {/* Search */}
           <div className="relative flex-1">
             <MagnifyingGlassIcon
-              className={`absolute top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4 ${isRTL ? "right-3" : "left-3"
-                }`}
+              className={`absolute top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4 ${isRTL ? "right-3" : "left-3"}`}
             />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className={`w-full h-11 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 text-sm outline-none transition-all placeholder-gray-400 ${isRTL ? "pr-10 pl-4" : "pl-10 pr-4"
-                }`}
-              placeholder={isRTL ? "ابحث عن مشكلة أو منطقة..." : "Search issues or regions..."}
+              className={`w-full h-10 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 text-sm outline-none transition-all placeholder-gray-400 ${isRTL ? "pr-10 pl-4" : "pl-10 pr-4"}`}
+              placeholder={isRTL ? "ابحث هنا..." : "Search issues..."}
             />
           </div>
 
           {/* Advanced Filter Button */}
           <button
             onClick={() => setDrawerOpen(true)}
-            className={`relative h-11 px-4 rounded-xl border transition-all flex items-center gap-2 text-sm font-medium ${activeFiltersCount > 0
-              ? "bg-red-600 border-red-600 text-white shadow-md shadow-red-500/20"
-              : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:border-red-400 hover:text-red-600"
+            className={`h-10 px-4 rounded-full border transition-all flex items-center gap-2 text-xs font-bold uppercase tracking-wider shrink-0 w-fit ${activeFiltersCount > 0
+              ? "bg-red-600 border-red-600 text-white shadow-lg shadow-red-500/20"
+              : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-500 dark:text-gray-400"
               }`}
           >
             <MixerHorizontalIcon className="h-4 w-4" />
-            {isRTL ? "تصفية" : "Filter"}
+            <span className="hidden sm:inline">{isRTL ? "تصفية" : "Filter"}</span>
             {activeFiltersCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-white text-red-600 border border-red-200 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-sm">
+              <span className={`rounded-full h-4 w-4 flex items-center justify-center text-[10px] ${activeFiltersCount > 0 ? "bg-white text-red-600" : "bg-red-600 text-white"}`}>
                 {activeFiltersCount}
               </span>
             )}
@@ -220,9 +218,9 @@ export default function Issues() {
         </div>
 
         {/* ── Category Chips (horizontal scroll) ───────────────────────────── */}
-        <div className="flex gap-2 overflow-x-auto pb-3 mb-6 no-scrollbar">
+        <div className="flex gap-2 overflow-x-auto pb-4 mb-4 no-scrollbar">
           {(() => {
-            const topCats = CATEGORIES.slice(0, 6);
+            const topCats = CATEGORIES.slice(0, 7);
             const displayedCats = [...topCats];
             activeCategories.forEach((cid) => {
               if (!displayedCats.find((c) => c.id === cid)) {
@@ -232,36 +230,18 @@ export default function Issues() {
             });
 
             return displayedCats.map((cat) => {
-              const isActive =
-                cat.id === "all"
-                  ? activeCategories.length === 0
-                  : activeCategories.includes(cat.id);
-
+              const isActive = cat.id === "all" ? activeCategories.length === 0 : activeCategories.includes(cat.id);
               return (
                 <button
                   key={cat.id}
                   onClick={() => toggleCategory(cat.id)}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 shrink-0 ${isActive
-                    ? "bg-red-600 text-white shadow-md shadow-red-500/25"
-                    : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-800 hover:border-red-400 hover:text-red-600 dark:hover:border-red-500 dark:hover:text-red-400"
+                  className={`h-9 px-4 rounded-full flex items-center gap-2 transition-all duration-200 shrink-0 text-sm font-medium border ${isActive
+                    ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white shadow-md shadow-black/10 dark:shadow-white/5"
+                    : "bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-gray-100 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700"
                     }`}
                 >
-                  <CategoryIcon name={cat.iconStr} className={`h-4 w-4 ${isActive ? "text-white" : "text-gray-400 group-hover:text-red-600"}`} />
+                  <CategoryIcon name={cat.iconStr} className={`h-4 w-4 ${isActive ? "text-inherit" : "text-gray-400"}`} />
                   <span>{isRTL ? cat.labelAr : cat.labelEn}</span>
-                  {cat.id !== "all" && (
-                    <span
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (isActive) toggleCategory(cat.id);
-                      }}
-                      className={`ml-1 rounded-full p-0.5 transition-opacity duration-200 ${isActive
-                        ? "opacity-100 pointer-events-auto hover:bg-white/20"
-                        : "invisible pointer-events-none"
-                        }`}
-                    >
-                      <Cross1Icon className="h-3 w-3" />
-                    </span>
-                  )}
                 </button>
               );
             });
@@ -435,10 +415,10 @@ export default function Issues() {
                           onClick={(e) => handleUpvote(issue.id, e)}
                           disabled={upvotingIds.includes(issue.id)}
                           className={`flex items-center gap-1.5 text-sm transition-all active:scale-95 disabled:opacity-50 ${issue.has_upvoted
-                              ? "text-red-600 font-bold"
-                              : issue.status === "solved"
-                                ? "text-emerald-500/60 dark:text-emerald-400/60 cursor-default"
-                                : "text-gray-400 hover:text-red-600"
+                            ? "text-red-600 font-bold"
+                            : issue.status === "solved"
+                              ? "text-emerald-500/60 dark:text-emerald-400/60 cursor-default"
+                              : "text-gray-400 hover:text-red-600"
                             }`}
                         >
                           <ArrowUpIcon className="h-4 w-4" />

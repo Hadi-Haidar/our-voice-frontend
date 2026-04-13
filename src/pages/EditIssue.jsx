@@ -321,7 +321,7 @@ export default function EditIssue() {
 
                         <hr className="border-gray-100 dark:border-gray-800" />
 
-                        {/* Section 4: Privacy & Submit */}
+                        {/* Section 4: Submit */}
                         <div className="p-4 sm:p-6 md:p-8 bg-gray-50 dark:bg-gray-800/50 flex flex-col gap-6">
                             <div className={`flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-4 ${isRTL ? "sm:flex-row-reverse" : ""}`}>
                                 <button
@@ -334,17 +334,14 @@ export default function EditIssue() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="w-full sm:w-auto relative group overflow-hidden px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium text-sm shadow transition-all transform active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-10 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-base shadow-lg shadow-emerald-500/30 transition-all transform active:scale-95 disabled:opacity-50"
                                 >
-                                    {/* Subtle gloss effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    
                                     {submitting ? (
                                         <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white"></div>
                                     ) : (
                                         <>
                                             <span>{isRTL ? "حفظ التغييرات" : "Save Changes"}</span>
-                                            <CheckIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                                            <CheckIcon className="h-5 w-5" />
                                         </>
                                     )}
                                 </button>

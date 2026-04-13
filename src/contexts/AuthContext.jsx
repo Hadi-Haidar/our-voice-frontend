@@ -15,7 +15,9 @@ export function AuthProvider({ children }) {
             // l hallaq mnet2akkad bas eno mawjoud bl local storage
             const savedUser = localStorage.getItem("user");
             if (savedUser) {
-                setUser(JSON.parse(savedUser));
+                const parsedUser = JSON.parse(savedUser);
+                // Add mock balance for testing paid features
+                setUser({ ...parsedUser, balance: 100 });
             }
         }
         setLoading(false);

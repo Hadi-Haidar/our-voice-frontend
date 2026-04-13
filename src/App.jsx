@@ -4,6 +4,7 @@ import RootLayout from "./layouts/RootLayout";
 import Landing from "./pages/Landing";
 import Issues from "./pages/Issues";
 import Polls from "./pages/Polls";
+import RequestPoll from "./pages/RequestPoll";
 import Announcements from "./pages/Announcements";
 import CommunityChat from "./pages/CommunityChat";
 import DistrictChat from "./pages/DistrictChat";
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/issues/:id/edit" element={<EditIssue />} />
         <Route path="/report-issue" element={<ReportIssue />} />
         <Route path="/polls" element={<Polls />} />
+        <Route path="/request-poll" element={<RequestPoll />} />
         <Route path="/announcements" element={<Announcements />} />
         <Route path="/chat" element={<CommunityChat />} />
         <Route path="/district-chat" element={<DistrictChat />} />

@@ -391,7 +391,7 @@ export default function ReportIssue() {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium text-sm shadow shadow-red-500/30 transition-all transform active:scale-95 disabled:opacity-50"
+                                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-10 py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-base shadow-lg shadow-red-500/30 transition-all transform active:scale-95 disabled:opacity-50"
                                 >
                                     {loading ? (
                                         <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white"></div>

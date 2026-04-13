@@ -22,7 +22,7 @@ export default function CTASection() {
       <div className="absolute inset-0 bg-black/60" />
 
       {/* Content */}
-      <div className="relative mx-auto max-w-4xl px-6 py-20 text-white">
+      <div className="relative mx-auto max-w-4xl px-6 py-10 sm:py-16 md:py-20 text-white">
         <h2 className="text-2xl font-semibold sm:text-3xl">
           {t("cta.title")}
         </h2>
@@ -41,7 +41,7 @@ export default function CTASection() {
         <div className="mt-8 flex flex-wrap gap-4">
           <Link
             to="/issues"
-            className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-100 shadow"
+            className="inline-flex rounded-full bg-white px-6 py-2.5 text-sm font-bold text-gray-900 transition hover:bg-gray-100 shadow-lg active:scale-95"
           >
             {t("cta.browseIssues")}
           </Link>

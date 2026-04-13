@@ -38,13 +38,13 @@ export default function HeroSection() {
           <div className="flex flex-wrap items-center gap-3">
             <Link
               to="/report-issue"
-              className="inline-flex items-center justify-center rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-950"
+              className="inline-flex items-center justify-center rounded-full bg-red-600 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-red-700 shadow-lg shadow-red-500/20 active:scale-95"
             >
               {t("hero.reportIssue")}
             </Link>
             <Link
               to="/issues"
-              className="inline-flex items-center justify-center rounded-xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/60 px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white transition hover:bg-white dark:hover:bg-gray-900 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/20 dark:focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-950"
+              className="inline-flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/60 px-6 py-2.5 text-sm font-bold text-gray-900 dark:text-white transition hover:bg-white dark:hover:bg-gray-900 shadow-sm active:scale-95"
             >
               {t("hero.browseIssues")}
             </Link>
