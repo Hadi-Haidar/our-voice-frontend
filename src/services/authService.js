@@ -52,4 +52,10 @@ export const authService = {
         // mnshil l token men l local storage la yotla3
         localStorage.removeItem("token");
     },
+
+    // Validate the stored token by hitting the protected /auth/me endpoint
+    async getMe() {
+        const response = await apiClient.get("/auth/me");
+        return response.data; // { success: true, user }
+    },
 };

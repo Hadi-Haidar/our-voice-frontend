@@ -8,6 +8,7 @@ const translations = {
     en: {
         common: {
             anonymous: "Anonymous",
+            back: "Back",
         },
         // Navigation
         nav: {
@@ -176,7 +177,7 @@ const translations = {
             pollCost: "Poll Cost",
             requestTitle: "Create a Paid Poll",
             requestSubtitle: "Submit your poll for review. Admin will approve it after confirming payment.",
-            questionPlaceholder: "Your Question (e.g., Which area needs more lighting?)",
+            questionPlaceholder: "Your Question (e.g., What is the most urgent issue in your neighborhood?)",
             optionPlaceholder: "Option",
             addOption: "Add Option",
             submitRequest: "Submit Request",
@@ -184,6 +185,17 @@ const translations = {
             requestSuccess: "Request submitted! Admin will review it shortly.",
             minimumOptions: "Please provide at least 2 options.",
             maxOptions: "Maximum 5 options allowed.",
+            all: "All",
+            sponsoredTab: "Sponsored",
+            active: "Active",
+            votedTab: "Voted",
+            popular: "Popular",
+            newest: "Newest",
+            sortBy: "Sort by",
+            options: "Poll Options",
+            duration: "Poll Duration",
+            days: "Days",
+            totalCost: "Total Cost",
         },
 
         // Not Found Page
@@ -277,6 +289,7 @@ const translations = {
     ar: {
         common: {
             anonymous: "مجهول",
+            back: "رجوع",
         },
         // Navigation
         nav: {
@@ -445,7 +458,7 @@ const translations = {
             pollCost: "تكلفة الاستطلاع",
             requestTitle: "إنشاء استطلاع ممول",
             requestSubtitle: "أرسل استطلاعك للمراجعة. سيقوم المسؤول بالموافقة عليه بعد تأكيد الدفع.",
-            questionPlaceholder: "سؤالك (مثلاً: أي منطقة تحتاج لمزيد من الإنارة؟)",
+            questionPlaceholder: "سؤالك (مثلاً: ما هي القضية الأكثر إلحاحاً في منطقتك؟)",
             optionPlaceholder: "خيار",
             addOption: "إضافة خيار",
             submitRequest: "إرسال الطلب",
@@ -453,6 +466,17 @@ const translations = {
             requestSuccess: "تم إرسال الطلب! سيقوم المسؤول بمراجعته قريباً.",
             minimumOptions: "يرجى تقديم خيارين على الأقل.",
             maxOptions: "الحد الأقصى 5 خيارات مسموح بها.",
+            all: "الكل",
+            sponsoredTab: "ممول",
+            active: "نشط",
+            votedTab: "تم التصويت",
+            popular: "الأكثر مشاركة",
+            newest: "الأحدث",
+            sortBy: "ترتيب حسب",
+            options: "خيارات الاستطلاع",
+            duration: "مدة الاستطلاع",
+            days: "أيام",
+            totalCost: "التكلفة الإجمالية",
         },
 
         // Not Found Page

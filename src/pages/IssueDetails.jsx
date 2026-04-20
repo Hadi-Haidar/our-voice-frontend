@@ -26,6 +26,8 @@ import { Helmet } from "react-helmet-async";
 import IssueMap from "../components/IssueMap";
 import { useAuth } from "../contexts/AuthContext";
 import { useConfirm } from "../hooks/useConfirm";
+import { useToast } from "../components/Toast";
+
 
 
 export default function IssueDetails() {
@@ -46,6 +48,8 @@ export default function IssueDetails() {
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editCommentText, setEditCommentText] = useState("");
     const confirm = useConfirm();
+    const { show } = useToast();
+
 
     const handleDelete = async () => {
         try {
@@ -66,8 +70,9 @@ export default function IssueDetails() {
             }
         } catch (err) {
             console.error("Error deleting issue:", err);
-            alert(isRTL ? "فشل حذف البلاغ" : "Failed to delete issue");
+            show(isRTL ? "فشل حذف البلاغ" : "Failed to delete issue", "error");
         } finally {
+
             setDeleting(false);
         }
     };
@@ -124,9 +129,10 @@ export default function IssueDetails() {
 
     const handleUpvote = async () => {
         if (!user) {
-            alert(isRTL ? "يرجى تسجيل الدخول للقيام بذلك" : "Please login to upvote");
+            show(isRTL ? "يرجى تسجيل الدخول للقيام بذلك" : "Please login to upvote", "warning");
             return;
         }
+
 
         if (upvoting) return;
 
@@ -152,9 +158,10 @@ export default function IssueDetails() {
 
     const handleAddComment = async () => {
         if (!user) {
-            alert(isRTL ? "يرجى تسجيل الدخول لإضافة تعليق" : "Please login to add a comment");
+            show(isRTL ? "يرجى تسجيل الدخول لإضافة تعليق" : "Please login to add a comment", "warning");
             return;
         }
+
 
         if (!commentText.trim() || submittingComment) return;
 
@@ -170,14 +177,16 @@ export default function IssueDetails() {
                     comments_count: (prev.comments_count || 0) + 1
                 }));
                 setCommentText(""); // Clear input
+                show(isRTL ? "تم إضافة التعليق بنجاح" : "Comment added successfully", "success");
             } else {
-                alert((isRTL ? "فشل إضافة التعليق: " : "Failed to add comment: ") + response.message);
+                show((isRTL ? "فشل إضافة التعليق: " : "Failed to add comment: ") + response.message, "error");
             }
         } catch (err) {
             console.error("Error adding comment:", err);
             const errMsg = err.response?.data?.message || err.message;
-            alert((isRTL ? "فشل إضافة التعليق: " : "Failed to add comment: ") + errMsg);
+            show((isRTL ? "فشل إضافة التعليق: " : "Failed to add comment: ") + errMsg, "error");
         } finally {
+
             setSubmittingComment(false);
         }
     };
@@ -198,14 +207,16 @@ export default function IssueDetails() {
                     comments: prev.comments.map(c => c.id === editingCommentId ? { ...c, text: editCommentText } : c)
                 }));
                 setEditingCommentId(null);
+                show(isRTL ? "تم تحديث التعليق" : "Comment updated", "success");
             } else {
-                alert((isRTL ? "فشل تعديل التعليق: " : "Failed to edit comment: ") + response.message);
+                show((isRTL ? "فشل تعديل التعليق: " : "Failed to edit comment: ") + response.message, "error");
             }
         } catch (err) {
             console.error("Error updating comment:", err);
             const errMsg = err.response?.data?.message || err.message;
-            alert((isRTL ? "فشل تعديل التعليق: " : "Failed to edit comment: ") + errMsg);
+            show((isRTL ? "فشل تعديل التعليق: " : "Failed to edit comment: ") + errMsg, "error");
         }
+
     };
 
     const handleDeleteComment = async (commentId) => {
@@ -224,15 +235,17 @@ export default function IssueDetails() {
                         comments: prev.comments.filter(c => c.id !== commentId),
                         comments_count: Math.max(0, (prev.comments_count || 0) - 1)
                     }));
+                    show(isRTL ? "تم حذف التعليق" : "Comment deleted", "success");
                 } else {
-                    alert((isRTL ? "فشل حذف التعليق: " : "Failed to delete comment: ") + response.message);
+                    show((isRTL ? "فشل حذف التعليق: " : "Failed to delete comment: ") + response.message, "error");
                 }
             }
         } catch (err) {
             console.error("Error deleting comment:", err);
             const errMsg = err.response?.data?.message || err.message;
-            alert((isRTL ? "فشل حذف التعليق: " : "Failed to delete comment: ") + errMsg);
+            show((isRTL ? "فشل حذف التعليق: " : "Failed to delete comment: ") + errMsg, "error");
         } finally {
+
             setActiveDropdownId(null);
         }
     };

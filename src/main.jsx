@@ -9,24 +9,27 @@ import { LanguageProvider } from "./i18n";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfirmProvider } from "./contexts/ConfirmContext";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <HelmetProvider>
-      <ThemeProvider>
-        <LanguageProvider>
-          <BrowserRouter>
-            <AuthProvider>
-              <ToastProvider>
-                <ConfirmProvider>
-                  <App />
-                </ConfirmProvider>
-              </ToastProvider>
-            </AuthProvider>
-          </BrowserRouter>
-        </LanguageProvider>
-      </ThemeProvider>
-    </HelmetProvider>
+    <ErrorBoundary>
+      <HelmetProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <BrowserRouter>
+              <AuthProvider>
+                <ToastProvider>
+                  <ConfirmProvider>
+                    <App />
+                  </ConfirmProvider>
+                </ToastProvider>
+              </AuthProvider>
+            </BrowserRouter>
+          </LanguageProvider>
+        </ThemeProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
   </React.StrictMode>
 );
 

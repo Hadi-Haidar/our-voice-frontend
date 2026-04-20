@@ -17,6 +17,10 @@ export const ICON_MAP = {
     "MobileIcon": Icons.MobileIcon,
     "HandIcon": Icons.HandIcon,
     "UpdateIcon": Icons.UpdateIcon,
+    "TimerIcon": Icons.TimerIcon,
+    "HeartIcon": Icons.HeartIcon,
+    "RocketIcon": Icons.RocketIcon,
+    "LightningBoltIcon": Icons.LightningBoltIcon,
 };
 
 /**

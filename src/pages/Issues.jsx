@@ -20,6 +20,8 @@ import {
 } from "@radix-ui/react-icons";
 import { CategoryIcon } from "../components/CategoryIcon";
 import { useAuth } from "../contexts/AuthContext";
+import { useToast } from "../components/Toast";
+
 
 const STATUS_OPTIONS = ["all", "pending", "in_progress", "solved"];
 
@@ -37,24 +39,62 @@ export default function Issues() {
   const [search, setSearch] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
+  const { show } = useToast();
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+
 
   useEffect(() => {
     const fetchIssues = async () => {
       try {
         setLoading(true);
-        const response = await issueService.getAllIssues();
+        // Reset page to 1 when filters change
+        setPage(1);
+        const filters = {
+          category_id: activeCategories.length === 1 ? activeCategories[0] : (activeCategories.length > 1 ? undefined : "all"),
+          status: activeStatus,
+          search: search
+        };
+        const response = await issueService.getAllIssues(filters, 1);
         if (response.success) {
           setIssues(response.data);
+          setHasMore(response.pagination?.hasMore || false);
         }
       } catch (err) {
         setError(err.message);
+        show(isRTL ? "فشل تحميل المشاكل" : "Failed to load issues", "error");
       } finally {
         setLoading(false);
       }
     };
 
     fetchIssues();
-  }, []);
+  }, [activeCategories, activeStatus, search, show, isRTL]);
+
+  const loadMore = async () => {
+    if (isFetchingMore || !hasMore) return;
+    try {
+      setIsFetchingMore(true);
+      const nextPage = page + 1;
+      const filters = {
+        category_id: activeCategories.length === 1 ? activeCategories[0] : (activeCategories.length > 1 ? undefined : "all"),
+        status: activeStatus,
+        search: search
+      };
+      const response = await issueService.getAllIssues(filters, nextPage);
+      if (response.success) {
+        setIssues(prev => [...prev, ...response.data]);
+        setPage(nextPage);
+        setHasMore(response.pagination?.hasMore || false);
+      }
+    } catch (err) {
+      show(isRTL ? "فشل تحميل المزيد" : "Failed to load more", "error");
+    } finally {
+      setIsFetchingMore(false);
+    }
+  };
+
 
   const getCategoryLabel = (catId) => {
     const cat = CATEGORIES.find(c => c.id === catId);
@@ -73,19 +113,12 @@ export default function Issues() {
   };
 
   // ── derived list ────────────────────────────────────────────────────────────
-  const filtered = issues.filter((issue) => {
-    const matchCat = activeCategories.length === 0 || activeCategories.includes(issue.category_id);
-    const matchStatus = activeStatus === "all" || issue.status === activeStatus;
-    const matchSearch = search === "" ||
-      issue.title.toLowerCase().includes(search.toLowerCase()) ||
-      (issue.location_text && issue.location_text.toLowerCase().includes(search.toLowerCase())) ||
-      issue.description.toLowerCase().includes(search.toLowerCase());
-    return matchCat && matchStatus && matchSearch;
-  }).sort((a, b) => {
+  const filtered = issues.sort((a, b) => {
     if (sortBy === "votes") return b.upvotes - a.upvotes;
     if (sortBy === "comments") return b.comments - a.comments;
     return new Date(b.created_at) - new Date(a.created_at); // newest (default)
   });
+
 
   const activeFiltersCount =
     activeCategories.length +
@@ -125,9 +158,10 @@ export default function Issues() {
     e.stopPropagation(); // Don't navigate to details
 
     if (!user) {
-      alert(isRTL ? "يرجى تسجيل الدخول للقيام بذلك" : "Please login to upvote");
+      show(isRTL ? "يرجى تسجيل الدخول للقيام بذلك" : "Please login to upvote", "warning");
       return;
     }
+
 
     if (upvotingIds.includes(id)) return;
 
@@ -450,6 +484,23 @@ export default function Issues() {
             )}
           </AnimatePresence>
         </div>
+
+        {/* Load More Button */}
+        {hasMore && (
+          <div className="flex justify-center mt-10 mb-20">
+            <button
+              onClick={loadMore}
+              disabled={isFetchingMore}
+              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-sm active:scale-95 disabled:opacity-50 flex items-center gap-2"
+            >
+              {isFetchingMore ? (
+                <div className="w-5 h-5 border-2 border-gray-300 border-t-red-600 rounded-full animate-spin" />
+              ) : null}
+              {isRTL ? "تحميل المزيد" : "Load More"}
+            </button>
+          </div>
+        )}
+
 
 
       </m.div>

@@ -7,35 +7,53 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // net2akkad eza l user 3emil login men abel w 3endo token
+    // On mount: validate the stored token against the backend's /auth/me endpoint.
+    // If the token is expired or invalid the backend returns 401,
+    // we clear localStorage and set user to null.
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            // hon mna3mel validate lal token mnel backend in the future
-            // l hallaq mnet2akkad bas eno mawjoud bl local storage
-            const savedUser = localStorage.getItem("user");
-            if (savedUser) {
-                const parsedUser = JSON.parse(savedUser);
-                // Add mock balance for testing paid features
-                setUser({ ...parsedUser, balance: 100 });
+        const validate = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setLoading(false);
+                return;
             }
-        }
-        setLoading(false);
+
+            try {
+                const response = await authService.getMe();
+                if (response.success) {
+                    // Merge with any extra fields stored locally (e.g. mock balance)
+                    const stored = localStorage.getItem("user");
+                    const stored_parsed = stored ? JSON.parse(stored) : {};
+                    setUser({ ...stored_parsed, ...response.user, balance: stored_parsed.balance ?? 100 });
+                } else {
+                    throw new Error("Token invalid");
+                }
+            } catch {
+                // Token expired or tampered – clean up
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                setUser(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        validate();
     }, []);
 
     // fn l login
     const login = async (credentials) => {
         const response = await authService.login(credentials);
-        setUser(response.user);
-        localStorage.setItem("user", JSON.stringify(response.user));
+        // Add mock balance (replace once backend supports it)
+        const userWithBalance = { ...response.user, balance: 100 };
+        setUser(userWithBalance);
+        localStorage.setItem("user", JSON.stringify(userWithBalance));
         return response;
     };
 
     // fn l register
     const register = async (userData) => {
         const response = await authService.register(userData);
-        // l backend bado OTP abl mantal3o l user w na3tih token,
-        // so hon bas mnraji3 response la ykambel khtwit l te2keed bl OTP.
         return response;
     };
 

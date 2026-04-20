@@ -1,12 +1,11 @@
 import { apiClient } from "./apiClient";
 
 export const issueService = {
-    // Get all issues with optional filters
-    getAllIssues: async (filters = {}) => {
+    // Get all issues with optional filters and pagination
+    getAllIssues: async (filters = {}, page = 1, limit = 12) => {
         try {
-            // filters can include category_id, status, search, etc.
-            const response = await apiClient.get("/issues", { params: filters });
-            return response.data; // This returns { success: true, data: [...] }
+            const response = await apiClient.get("/issues", { params: { ...filters, page, limit } });
+            return response.data; // { success, data, pagination }
         } catch (error) {
             console.error("Error fetching issues:", error);
             throw error;
