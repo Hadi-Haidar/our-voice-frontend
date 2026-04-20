@@ -170,6 +170,14 @@ In-app notification message (success, error, info). Appears temporarily after an
 
 ---
 
+## ErrorBoundary
+**File:** `src/components/ErrorBoundary.jsx`
+
+A React class component designed to catch JavaScript errors anywhere in their child component tree, log those errors, and display a fallback UI instead of crashing the whole application tree.
+
+
+---
+
 ## Landing Section Components (`src/components/landing/`)
 
 Sub-components that build the Landing page, each is a self-contained section:

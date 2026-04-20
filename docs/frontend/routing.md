@@ -23,7 +23,8 @@ The app has two layout tiers:
 ├── /issues/:id      → IssueDetails.jsx
 ├── /issues/:id/edit → EditIssue.jsx
 ├── /report-issue    → ReportIssue.jsx
-├── /polls           → Polls.jsx          (placeholder)
+├── /polls           → Polls.jsx
+├── /request-poll    → RequestPoll.jsx
 ├── /announcements   → Announcements.jsx  (placeholder)
 ├── /chat            → CommunityChat.jsx  (placeholder)
 ├── /district-chat   → DistrictChat.jsx   (placeholder)
